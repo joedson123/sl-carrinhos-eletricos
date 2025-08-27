@@ -1,0 +1,3379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Carrinhos Elétricos - Sistema Offline</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+        
+        .sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background: #343a40;
+            color: #fff;
+            transition: all 0.3s;
+            min-height: 100vh;
+        }
+        
+        .sidebar.active {
+            margin-left: -250px;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: #495057;
+            text-align: center;
+        }
+        
+        .sidebar-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            border-bottom: 1px solid #495057;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 15px 20px;
+            color: #adb5bd;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            background: #495057;
+            color: #fff;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        
+        .content {
+            width: 100%;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        
+        .page-section {
+            display: none;
+        }
+        
+        .page-section.active {
+            display: block;
+        }
+        
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px;
+            background: #495057;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info i {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+        
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .user-role {
+            font-size: 0.8rem;
+            color: #adb5bd;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -250px;
+            }
+            .sidebar.active {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <img src="img/logoslcarrinhoseletricos.webp" alt="Logo" class="sidebar-logo">
+                <h4>SL Carrinhos</h4>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="alugueis">
+                        <i class="fas fa-handshake"></i>
+                        <span>Aluguéis</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="clientes">
+                        <i class="fas fa-users"></i>
+                        <span>Clientes</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="carrinhos">
+                        <i class="fas fa-car"></i>
+                        <span>Carrinhos</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="tempos-aluguel">
+                        <i class="fas fa-clock"></i>
+                        <span>Tempos de Aluguel</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="manutencoes">
+                        <i class="fas fa-tools"></i>
+                        <span>Manutenções</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="cupons">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Cupons</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="relatorios">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="configuracoes">
+                        <i class="fas fa-cog"></i>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div class="user-details">
+                        <span class="user-name">Administrador</span>
+                        <span class="user-role">Admin</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div id="content" class="content">
+            <!-- Top Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <div class="navbar-nav ms-auto">
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Administrador
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Meu Perfil</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="exportData()"><i class="fas fa-download me-2"></i>Exportar Dados</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="importData()"><i class="fas fa-upload me-2"></i>Importar Dados</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="clearAllData()"><i class="fas fa-trash me-2"></i>Limpar Dados</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Page Content -->
+            <div class="container-fluid p-4">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="page-section active">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h1 class="h3 mb-0">
+                                    <i class="fas fa-tachometer-alt me-2"></i>
+                                    Dashboard
+                                </h1>
+                                <div class="dashboard-controls">
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="toggle-financial-info" title="Ocultar/Mostrar informações financeiras">
+                                            <i class="fas fa-eye" id="financial-eye-icon"></i>
+                                            <span class="ms-1">Financeiro</span>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="toggle-rental-info" title="Ocultar/Mostrar informações de aluguéis">
+                                            <i class="fas fa-eye" id="rental-eye-icon"></i>
+                                            <span class="ms-1">Aluguéis</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estatísticas Gerais -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-3 rental-info-card">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Total de Aluguéis</h6>
+                                            <h3 class="mb-0" id="total-alugueis">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-handshake fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Clientes Ativos</h6>
+                                            <h3 class="mb-0" id="total-clientes">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-users fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Carrinhos</h6>
+                                            <h3 class="mb-0" id="total-carrinhos">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-car fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3 financial-info-card">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Receita Total</h6>
+                                            <h3 class="mb-0" id="receita-total">R$ 0,00</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-dollar-sign fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Aluguéis Recentes -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-clock me-2"></i>
+                                        Aluguéis Recentes
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="alugueis-recentes">
+                                        <p class="text-muted">Nenhum aluguel encontrado.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Outras seções serão adicionadas aqui -->
+                <div id="alugueis-section" class="page-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h1 class="h3 mb-0">
+                                    <i class="fas fa-handshake me-2"></i>
+                                    Aluguéis
+                                </h1>
+                                
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary" onclick="openAluguelModal()">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Novo Aluguel
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-success" id="btn-iniciar-timers" onclick="AlugueisManager.startCountdowns()" title="Iniciar/Retomar Contadores">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="btn btn-warning" id="btn-pausar-timers" onclick="AlugueisManager.pauseCountdowns()" title="Pausar Contadores">
+                                            <i class="fas fa-pause"></i>
+                                        </button>
+                                        <button class="btn btn-danger" id="btn-parar-timers" onclick="AlugueisManager.stopCountdowns()" title="Parar Contadores">
+                                            <i class="fas fa-stop"></i>
+                                        </button>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="toggle-rental-values" title="Ocultar/Mostrar valores dos aluguéis">
+                                        <i class="fas fa-eye" id="rental-values-eye-icon"></i>
+                                        <span class="ms-1">Valores</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estatísticas dos Aluguéis -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Total de Aluguéis</h6>
+                                            <h3 class="mb-0" id="total-alugueis-stats">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-handshake fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Em Andamento</h6>
+                                            <h3 class="mb-0" id="alugueis-andamento">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-play-circle fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Finalizados Hoje</h6>
+                                            <h3 class="mb-0" id="alugueis-hoje">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3 rental-financial-card">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Receita Hoje</h6>
+                                            <h3 class="mb-0" id="receita-hoje">R$ 0,00</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-dollar-sign fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtros -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="search-alugueis" placeholder="Buscar por cliente ou carrinho...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filter-status-aluguel">
+                                <option value="">Todos os Status</option>
+                                <option value="Em Andamento">Em Andamento</option>
+                                <option value="Finalizado">Finalizado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" id="filter-data" placeholder="Filtrar por data">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-secondary w-100" onclick="AlugueisManager.clearFilters()">
+                                <i class="fas fa-times me-1"></i> Limpar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabela de Aluguéis -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-list me-2"></i>
+                                        Lista de Aluguéis
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="alugueis-table" class="table table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Cliente</th>
+                                                    <th>Carrinho</th>
+                                                    <th>Tempo</th>
+                                                    <th>Valor</th>
+                                                    <th>Início</th>
+                                                    <th>Tempo Restante</th>
+                                                    <th>Status</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="alugueis-tbody">
+                                                <!-- Dados serão carregados via JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="clientes-section" class="page-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h1 class="h3 mb-0">
+                                    <i class="fas fa-users me-2"></i>
+                                    Clientes
+                                </h1>
+                                
+                                <div class="d-flex gap-2">
+                                     <button class="btn btn-primary" onclick="openClienteModal()">
+                                         <i class="fas fa-plus me-2"></i>
+                                         Novo Cliente
+                                     </button>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estatísticas dos Clientes -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Total de Clientes</h6>
+                                            <h3 class="mb-0" id="total-clientes-stats">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-users fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Clientes Ativos</h6>
+                                            <h3 class="mb-0" id="clientes-ativos">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-user-check fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Novos Este Mês</h6>
+                                            <h3 class="mb-0" id="novos-mes">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-user-plus fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Total Aluguéis</h6>
+                                            <h3 class="mb-0" id="total-alugueis-clientes">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-handshake fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtros -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="search-clientes" placeholder="Buscar por nome, telefone ou email...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filter-status">
+                                <option value="">Todos os Status</option>
+                                <option value="ativo">Ativos</option>
+                                <option value="inativo">Inativos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-secondary" onclick="ClientesManager.clearFilters()">
+                                <i class="fas fa-times me-1"></i> Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabela de Clientes -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-list me-2"></i>
+                                        Lista de Clientes
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="clientes-table" class="table table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Nome</th>
+                                                    <th>Telefone</th>
+                                                    <th>Email</th>
+                                                    <th>CPF</th>
+                                                    <th>Aluguéis</th>
+                                                    <th>Cadastro</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="clientes-tbody">
+                                                <!-- Dados serão carregados via JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="carrinhos-section" class="page-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h1 class="h3 mb-0">
+                                    <i class="fas fa-car me-2"></i>
+                                    Carrinhos
+                                </h1>
+                                
+                                <div class="d-flex gap-2">
+                                     <button class="btn btn-primary" onclick="openCarrinhoModal()">
+                                         <i class="fas fa-plus me-2"></i>
+                                         Novo Carrinho
+                                     </button>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estatísticas dos Carrinhos -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Total de Carrinhos</h6>
+                                            <h3 class="mb-0" id="total-carrinhos-stats">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-car fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Disponíveis</h6>
+                                            <h3 class="mb-0" id="carrinhos-disponiveis">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Em Uso</h6>
+                                            <h3 class="mb-0" id="carrinhos-em-uso">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-play-circle fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Em Manutenção</h6>
+                                            <h3 class="mb-0" id="carrinhos-manutencao">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-tools fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabela de Carrinhos -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-list me-2"></i>
+                                        Lista de Carrinhos
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="carrinhos-table" class="table table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Número</th>
+                                                    <th>Modelo</th>
+                                                    <th>Cor</th>
+                                                    <th>Status</th>
+                                                    <th>Bateria</th>
+                                                    <th>Aluguéis</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="carrinhos-tbody">
+                                                <!-- Dados serão carregados via JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tempos-aluguel-section" class="page-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h1 class="h3 mb-0">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Tempos de Aluguel
+                                </h1>
+                                
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary" onclick="openTempoModal()">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Novo Tempo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estatísticas dos Tempos -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Total de Tempos</h6>
+                                            <h3 class="mb-0" id="total-tempos">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-clock fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Tempos Ativos</h6>
+                                            <h3 class="mb-0" id="tempos-ativos">0</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Valor Médio</h6>
+                                            <h3 class="mb-0" id="valor-medio">R$ 0,00</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-dollar-sign fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title mb-1">Duração Média</h6>
+                                            <h3 class="mb-0" id="duracao-media">0 min</h3>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-hourglass-half fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabela de Tempos -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-list me-2"></i>
+                                        Lista de Tempos
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="tempos-table" class="table table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Nome</th>
+                                                    <th>Duração</th>
+                                                    <th>Valor</th>
+                                                    <th>Categoria</th>
+                                                    <th>Status</th>
+                                                    <th>Aluguéis</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tempos-tbody">
+                                                <!-- Dados serão carregados via JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="manutencoes-section" class="page-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="h3 mb-4">
+                                <i class="fas fa-tools me-2"></i>
+                                Manutenções
+                            </h1>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Funcionalidade em Desenvolvimento</strong><br>
+                                Esta seção permitirá gerenciar manutenções dos carrinhos, incluindo:
+                                <ul class="mb-0 mt-2">
+                                    <li>Registro de manutenções preventivas e corretivas</li>
+                                    <li>Controle de peças e custos</li>
+                                    <li>Histórico de manutenções por carrinho</li>
+                                    <li>Agendamento de manutenções</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="cupons-section" class="page-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="h3 mb-4">
+                                <i class="fas fa-ticket-alt me-2"></i>
+                                Cupons de Desconto
+                            </h1>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Funcionalidade em Desenvolvimento</strong><br>
+                                Esta seção permitirá gerenciar cupons de desconto, incluindo:
+                                <ul class="mb-0 mt-2">
+                                    <li>Criação de cupons com códigos únicos</li>
+                                    <li>Definição de valores e percentuais de desconto</li>
+                                    <li>Controle de validade e uso dos cupons</li>
+                                    <li>Relatórios de uso e efetividade</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="relatorios-section" class="page-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="h3 mb-4">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Relatórios
+                            </h1>
+                            
+                            <!-- Relatórios Básicos -->
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-chart-line me-2"></i>
+                                                Resumo Geral
+                                            </h5>
+                                        </div>
+                                        <div class="card-body" id="resumo-geral">
+                                            <!-- Dados carregados via JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-trophy me-2"></i>
+                                                Top Tempos
+                                            </h5>
+                                        </div>
+                                        <div class="card-body" id="top-tempos">
+                                            <!-- Dados carregados via JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Relatórios Avançados em Desenvolvimento</strong><br>
+                                Funcionalidades futuras incluirão gráficos interativos, exportação em PDF e relatórios personalizados.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="configuracoes-section" class="page-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="h3 mb-4">
+                                <i class="fas fa-cog me-2"></i>
+                                Configurações
+                            </h1>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-database me-2"></i>
+                                                Gerenciar Dados
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="text-muted">Controle seus dados do sistema</p>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-success" onclick="exportData()">
+                                                    <i class="fas fa-download me-2"></i>
+                                                    Exportar Dados
+                                                </button>
+                                                <button class="btn btn-info" onclick="importData()">
+                                                    <i class="fas fa-upload me-2"></i>
+                                                    Importar Dados
+                                                </button>
+                                                <button class="btn btn-danger" onclick="clearAllData()">
+                                                    <i class="fas fa-trash me-2"></i>
+                                                    Limpar Todos os Dados
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-info me-2"></i>
+                                                Sobre o Sistema
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>SL Carrinhos Elétricos - Versão Offline</strong></p>
+                                            <p class="text-muted">Sistema de gestão offline baseado no sistema original da SL Carrinhos Elétricos.</p>
+                                            <hr>
+                                            <p class="mb-1"><strong>Funcionalidades:</strong></p>
+                                            <ul class="text-muted small">
+                                                <li>Gestão de Tempos de Aluguel</li>
+                                                <li>Cadastro de Clientes</li>
+                                                <li>Controle de Carrinhos</li>
+                                                <li>Dashboard com Estatísticas</li>
+                                                <li>Sistema de Backup/Restore</li>
+                                            </ul>
+                                            <hr>
+                                            <p class="mb-0 small text-muted">
+                                                <i class="fas fa-shield-alt me-1"></i>
+                                                Todos os dados são armazenados localmente no seu navegador.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer bg-light border-top mt-auto py-3">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <span class="text-muted">
+                        © 2025 SL Carrinhos Elétricos - Versão Offline. Todos os direitos reservados.
+                    </span>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="text-muted">
+                        Dados armazenados localmente no navegador
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Input oculto para importação de dados -->
+    <input type="file" id="import-file" accept=".json" style="display: none;">
+    
+    <!-- Modal para Tempo de Aluguel -->
+    <div class="modal fade" id="tempoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tempoModalTitle">Novo Tempo de Aluguel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="tempoForm">
+                        <input type="hidden" id="tempo-id">
+                        
+                        <div class="mb-3">
+                            <label for="tempo-nome" class="form-label">Nome *</label>
+                            <input type="text" class="form-control" id="tempo-nome" required>
+                            <div class="invalid-feedback">Por favor, informe o nome do tempo.</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tempo-duracao" class="form-label">Duração (minutos) *</label>
+                                    <input type="number" class="form-control" id="tempo-duracao" min="1" required>
+                                    <div class="invalid-feedback">Por favor, informe a duração em minutos.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tempo-valor" class="form-label">Valor (R$) *</label>
+                                    <input type="number" class="form-control" id="tempo-valor" min="0" step="0.01" required>
+                                    <div class="invalid-feedback">Por favor, informe o valor.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tempo-categoria" class="form-label">Categoria</label>
+                            <select class="form-select" id="tempo-categoria">
+                                <option value="Curta Duração">Curta Duração</option>
+                                <option value="Média Duração">Média Duração</option>
+                                <option value="Longa Duração">Longa Duração</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="tempo-ativo" checked>
+                                <label class="form-check-label" for="tempo-ativo">
+                                    Tempo ativo
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tempo-descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="tempo-descricao" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="salvar-tempo">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+     
+     <!-- Modal para Cliente -->
+     <div class="modal fade" id="clienteModal" tabindex="-1">
+         <div class="modal-dialog modal-lg">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <h5 class="modal-title" id="clienteModalTitle">Novo Cliente</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                 </div>
+                 <div class="modal-body">
+                     <form id="clienteForm">
+                         <input type="hidden" id="cliente-id">
+                         
+                         <div class="row">
+                             <div class="col-md-8">
+                                 <div class="mb-3">
+                                     <label for="cliente-nome" class="form-label">Nome Completo *</label>
+                                     <input type="text" class="form-control" id="cliente-nome" required>
+                                     <div class="invalid-feedback">Por favor, informe o nome completo.</div>
+                                 </div>
+                             </div>
+                             <div class="col-md-4">
+                                 <div class="mb-3">
+                                     <label for="cliente-cpf" class="form-label">CPF</label>
+                                     <input type="text" class="form-control cpf-mask" id="cliente-cpf">
+                                     <div class="invalid-feedback">Por favor, informe um CPF válido.</div>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="row">
+                             <div class="col-md-6">
+                                 <div class="mb-3">
+                                     <label for="cliente-telefone" class="form-label">Telefone *</label>
+                                     <input type="text" class="form-control telefone-mask" id="cliente-telefone" required>
+                                     <div class="invalid-feedback">Por favor, informe o telefone.</div>
+                                 </div>
+                             </div>
+                             <div class="col-md-6">
+                                 <div class="mb-3">
+                                     <label for="cliente-email" class="form-label">Email</label>
+                                     <input type="email" class="form-control" id="cliente-email">
+                                     <div class="invalid-feedback">Por favor, informe um email válido.</div>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="mb-3">
+                             <label for="cliente-endereco" class="form-label">Endereço</label>
+                             <input type="text" class="form-control" id="cliente-endereco">
+                         </div>
+                         
+                         <div class="row">
+                             <div class="col-md-4">
+                                 <div class="mb-3">
+                                     <label for="cliente-cep" class="form-label">CEP</label>
+                                     <input type="text" class="form-control cep-mask" id="cliente-cep">
+                                 </div>
+                             </div>
+                             <div class="col-md-4">
+                                 <div class="mb-3">
+                                     <label for="cliente-cidade" class="form-label">Cidade</label>
+                                     <input type="text" class="form-control" id="cliente-cidade">
+                                 </div>
+                             </div>
+                             <div class="col-md-4">
+                                 <div class="mb-3">
+                                     <label for="cliente-estado" class="form-label">Estado</label>
+                                     <input type="text" class="form-control" id="cliente-estado" maxlength="2">
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="mb-3">
+                             <label for="cliente-observacoes" class="form-label">Observações</label>
+                             <textarea class="form-control" id="cliente-observacoes" rows="3"></textarea>
+                         </div>
+                         
+                         <div class="mb-3">
+                             <div class="form-check">
+                                 <input class="form-check-input" type="checkbox" id="cliente-ativo" checked>
+                                 <label class="form-check-label" for="cliente-ativo">
+                                     Cliente ativo
+                                 </label>
+                             </div>
+                         </div>
+                     </form>
+                 </div>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                     <button type="button" class="btn btn-primary" id="salvar-cliente">Salvar</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+      
+      <!-- Modal para Carrinho -->
+      <div class="modal fade" id="carrinhoModal" tabindex="-1">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="carrinhoModalTitle">Novo Carrinho</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                      <form id="carrinhoForm">
+                          <input type="hidden" id="carrinho-id">
+                          
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <div class="mb-3">
+                                      <label for="carrinho-numero" class="form-label">Número *</label>
+                                      <input type="text" class="form-control" id="carrinho-numero" required>
+                                      <div class="invalid-feedback">Por favor, informe o número do carrinho.</div>
+                                  </div>
+                              </div>
+                              <div class="col-md-6">
+                                  <div class="mb-3">
+                                      <label for="carrinho-modelo" class="form-label">Modelo *</label>
+                                      <input type="text" class="form-control" id="carrinho-modelo" required>
+                                      <div class="invalid-feedback">Por favor, informe o modelo.</div>
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <div class="mb-3">
+                                      <label for="carrinho-cor" class="form-label">Cor</label>
+                                      <input type="text" class="form-control" id="carrinho-cor">
+                                  </div>
+                              </div>
+                              <div class="col-md-6">
+                                  <div class="mb-3">
+                                      <label for="carrinho-bateria" class="form-label">Bateria (%)</label>
+                                      <input type="number" class="form-control" id="carrinho-bateria" min="0" max="100" value="100">
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <div class="mb-3">
+                              <label for="carrinho-status" class="form-label">Status</label>
+                              <select class="form-select" id="carrinho-status">
+                                  <option value="Disponível">Disponível</option>
+                                  <option value="Em Uso">Em Uso</option>
+                                  <option value="Em Manutenção">Em Manutenção</option>
+                                  <option value="Inativo">Inativo</option>
+                              </select>
+                          </div>
+                          
+                          <div class="mb-3">
+                              <label for="carrinho-observacoes" class="form-label">Observações</label>
+                              <textarea class="form-control" id="carrinho-observacoes" rows="3"></textarea>
+                          </div>
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                      <button type="button" class="btn btn-primary" id="salvar-carrinho">Salvar</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+      <!-- Modal para Aluguel -->
+      <div class="modal fade" id="aluguelModal" tabindex="-1">
+          <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="aluguelModalTitle">Novo Aluguel</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                      <form id="aluguelForm">
+                          <input type="hidden" id="aluguel-id">
+                          
+                          <div class="row">
+                              <div class="col-md-6">
+                                   <div class="mb-3">
+                                       <label for="aluguel-cliente" class="form-label">Cliente *</label>
+                                       <div class="input-group">
+                                           <select class="form-select" id="aluguel-cliente" required>
+                                               <option value="">Selecione um cliente</option>
+                                           </select>
+                                           <button class="btn btn-outline-primary" type="button" onclick="AlugueisManager.openNovoClienteModal()" title="Cadastrar Novo Cliente">
+                                               <i class="fas fa-plus"></i>
+                                           </button>
+                                       </div>
+                                       <div class="invalid-feedback">Por favor, selecione um cliente.</div>
+                                   </div>
+                               </div>
+                              <div class="col-md-6">
+                                  <div class="mb-3">
+                                      <label for="aluguel-carrinho" class="form-label">Carrinho *</label>
+                                      <select class="form-select" id="aluguel-carrinho" required>
+                                          <option value="">Selecione um carrinho</option>
+                                      </select>
+                                      <div class="invalid-feedback">Por favor, selecione um carrinho.</div>
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <div class="mb-3">
+                                      <label for="aluguel-tempo" class="form-label">Tempo de Aluguel *</label>
+                                      <select class="form-select" id="aluguel-tempo" required>
+                                          <option value="">Selecione um tempo</option>
+                                      </select>
+                                      <div class="invalid-feedback">Por favor, selecione um tempo.</div>
+                                  </div>
+                              </div>
+                              <div class="col-md-6">
+                                  <div class="mb-3">
+                                      <label for="aluguel-valor" class="form-label">Valor (R$)</label>
+                                      <input type="text" class="form-control" id="aluguel-valor" readonly>
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <div class="row">
+                              <div class="col-md-6">
+                                   <div class="mb-3">
+                                       <label for="aluguel-data-inicio" class="form-label">Data/Hora de Início *</label>
+                                       <div class="input-group">
+                                           <input type="datetime-local" class="form-control" id="aluguel-data-inicio" required>
+                                           <button class="btn btn-outline-secondary" type="button" onclick="AlugueisManager.setCurrentBrasiliaTime()" title="Atualizar para horário atual de Brasília">
+                                               <i class="fas fa-clock"></i>
+                                           </button>
+                                       </div>
+                                       <div class="invalid-feedback">Por favor, informe a data de início.</div>
+                                       <small class="text-muted">Horário de Brasília (UTC-3)</small>
+                                   </div>
+                               </div>
+                              <div class="col-md-6">
+                                  <div class="mb-3">
+                                      <label for="aluguel-data-fim" class="form-label">Data/Hora de Fim (Calculado)</label>
+                                      <input type="text" class="form-control" id="aluguel-data-fim" readonly>
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <div class="mb-3">
+                              <label for="aluguel-observacoes" class="form-label">Observações</label>
+                              <textarea class="form-control" id="aluguel-observacoes" rows="3"></textarea>
+                          </div>
+                          
+                          <div class="mb-3">
+                              <label for="aluguel-status" class="form-label">Status</label>
+                              <select class="form-select" id="aluguel-status">
+                                  <option value="Em Andamento">Em Andamento</option>
+                                  <option value="Finalizado">Finalizado</option>
+                                  <option value="Cancelado">Cancelado</option>
+                              </select>
+                          </div>
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                      <button type="button" class="btn btn-primary" id="salvar-aluguel">Salvar</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+       
+       <!-- Modal para Novo Cliente Rápido -->
+       <div class="modal fade" id="novoClienteRapidoModal" tabindex="-1">
+           <div class="modal-dialog">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <h5 class="modal-title">Cadastro Rápido de Cliente</h5>
+                       <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                   </div>
+                   <div class="modal-body">
+                       <form id="novoClienteRapidoForm">
+                           <div class="mb-3">
+                               <label for="cliente-rapido-nome" class="form-label">Nome Completo *</label>
+                               <input type="text" class="form-control" id="cliente-rapido-nome" required>
+                               <div class="invalid-feedback">Por favor, informe o nome.</div>
+                           </div>
+                           
+                           <div class="row">
+                               <div class="col-md-6">
+                                   <div class="mb-3">
+                                       <label for="cliente-rapido-cpf" class="form-label">CPF</label>
+                                       <input type="text" class="form-control" id="cliente-rapido-cpf">
+                                       <div class="invalid-feedback">Por favor, informe um CPF válido.</div>
+                                   </div>
+                               </div>
+                               <div class="col-md-6">
+                                   <div class="mb-3">
+                                       <label for="cliente-rapido-telefone" class="form-label">Telefone *</label>
+                                       <input type="text" class="form-control" id="cliente-rapido-telefone" required>
+                                       <div class="invalid-feedback">Por favor, informe o telefone.</div>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="mb-3">
+                               <label for="cliente-rapido-email" class="form-label">Email</label>
+                               <input type="email" class="form-control" id="cliente-rapido-email">
+                           </div>
+                           
+                           <div class="alert alert-info">
+                               <i class="fas fa-info-circle me-2"></i>
+                               <strong>Cadastro Rápido:</strong> Após salvar, você poderá completar os dados do cliente na seção "Clientes".
+                           </div>
+                       </form>
+                   </div>
+                   <div class="modal-footer">
+                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                       <button type="button" class="btn btn-primary" id="salvar-cliente-rapido">Salvar e Selecionar</button>
+                   </div>
+               </div>
+           </div>
+       </div>
+       
+       <!-- Data Manager -->
+    <script src="js/data-manager.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/pt-br.min.js"></script>
+    
+    <script>
+        // Sistema de Autenticação e Sincronização
+        class SyncManager {
+            constructor() {
+                this.currentUser = null;
+                this.syncInterval = null;
+                this.init();
+            }
+            
+            init() {
+                // Verificar se está logado
+                const savedUser = localStorage.getItem('currentUser');
+                if (!savedUser) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                this.currentUser = JSON.parse(savedUser);
+                this.setupUI();
+                this.startAutoSync();
+            }
+            
+            setupUI() {
+                // Adicionar informações do usuário na interface
+                const userInfo = document.createElement('div');
+                userInfo.className = 'user-info d-flex align-items-center';
+                userInfo.innerHTML = `
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-2"></i>
+                            ${this.currentUser.name}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="syncManager.syncNow()"><i class="fas fa-sync me-2"></i>Sincronizar Agora</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="syncManager.logout()"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                    <div class="sync-indicator ms-2" id="sync-indicator">
+                        <i class="fas fa-cloud text-success" title="Sincronizado"></i>
+                    </div>
+                `;
+                
+                // Adicionar ao cabeçalho
+                const navbar = document.querySelector('.navbar .container-fluid');
+                if (navbar) {
+                    navbar.appendChild(userInfo);
+                }
+            }
+            
+            startAutoSync() {
+                // Sincronizar a cada 5 minutos
+                this.syncInterval = setInterval(() => {
+                    this.syncData();
+                }, 5 * 60 * 1000);
+                
+                // Sincronizar ao carregar
+                this.syncData();
+            }
+            
+            async syncData() {
+                if (!this.currentUser) return;
+                
+                try {
+                    this.updateSyncIndicator('syncing');
+                    
+                    // Upload dados locais para nuvem
+                    await this.uploadToCloud();
+                    
+                    // Download dados da nuvem
+                    const cloudData = await this.downloadFromCloud();
+                    if (cloudData) {
+                        this.mergeData(cloudData);
+                    }
+                    
+                    this.updateSyncIndicator('success');
+                } catch (error) {
+                    console.error('Erro na sincronização:', error);
+                    this.updateSyncIndicator('error');
+                }
+            }
+            
+            async uploadToCloud() {
+                const localData = {
+                    tempos_aluguel: JSON.parse(localStorage.getItem('tempos_aluguel') || '[]'),
+                    clientes: JSON.parse(localStorage.getItem('clientes') || '[]'),
+                    carrinhos: JSON.parse(localStorage.getItem('carrinhos') || '[]'),
+                    alugueis: JSON.parse(localStorage.getItem('alugueis') || '[]'),
+                    manutencoes: JSON.parse(localStorage.getItem('manutencoes') || '[]'),
+                    cupons: JSON.parse(localStorage.getItem('cupons') || '[]'),
+                    lastSync: new Date().toISOString()
+                };
+                
+                const cloudKey = `user_data_${this.currentUser.id}`;
+                localStorage.setItem(cloudKey, JSON.stringify(localData));
+            }
+            
+            async downloadFromCloud() {
+                const cloudKey = `user_data_${this.currentUser.id}`;
+                const cloudData = localStorage.getItem(cloudKey);
+                return cloudData ? JSON.parse(cloudData) : null;
+            }
+            
+            mergeData(cloudData) {
+                const dataTypes = ['tempos_aluguel', 'clientes', 'carrinhos', 'alugueis', 'manutencoes', 'cupons'];
+                
+                dataTypes.forEach(type => {
+                    const localData = JSON.parse(localStorage.getItem(type) || '[]');
+                    const cloudItems = cloudData[type] || [];
+                    
+                    const merged = [...localData];
+                    
+                    cloudItems.forEach(cloudItem => {
+                        const existingIndex = merged.findIndex(item => item.id === cloudItem.id);
+                        
+                        if (existingIndex >= 0) {
+                            const localItem = merged[existingIndex];
+                            const cloudDate = new Date(cloudItem.updated_at || cloudItem.created_at);
+                            const localDate = new Date(localItem.updated_at || localItem.created_at);
+                            
+                            if (cloudDate > localDate) {
+                                merged[existingIndex] = cloudItem;
+                            }
+                        } else {
+                            merged.push(cloudItem);
+                        }
+                    });
+                    
+                    localStorage.setItem(type, JSON.stringify(merged));
+                });
+                
+                // Recarregar dados na interface
+                if (typeof DataManager !== 'undefined' && DataManager.updateDashboard) {
+                    DataManager.updateDashboard();
+                }
+            }
+            
+            updateSyncIndicator(status) {
+                const indicator = document.getElementById('sync-indicator');
+                if (!indicator) return;
+                
+                const icon = indicator.querySelector('i');
+                
+                switch (status) {
+                    case 'syncing':
+                        icon.className = 'fas fa-sync fa-spin text-primary';
+                        icon.title = 'Sincronizando...';
+                        break;
+                    case 'success':
+                        icon.className = 'fas fa-cloud text-success';
+                        icon.title = 'Sincronizado';
+                        break;
+                    case 'error':
+                        icon.className = 'fas fa-cloud text-danger';
+                        icon.title = 'Erro na sincronização';
+                        break;
+                }
+            }
+            
+            async syncNow() {
+                await this.syncData();
+                Utils.showAlert('Sincronização manual concluída!', 'success');
+            }
+            
+            logout() {
+                if (confirm('Tem certeza que deseja sair? Os dados serão sincronizados antes de sair.')) {
+                    this.syncData().then(() => {
+                        localStorage.removeItem('currentUser');
+                        window.location.href = 'login.html';
+                    });
+                }
+            }
+        }
+        
+        // Sistema de controle de visibilidade do dashboard
+                 class DashboardVisibility {
+                     constructor() {
+                         this.financialVisible = true;
+                         this.rentalVisible = true;
+                         this.rentalValuesVisible = true;
+                         this.init();
+                     }
+                     
+                     init() {
+                          // Carregar preferências salvas
+                          const savedFinancial = localStorage.getItem('dashboard_financial_visible');
+                          const savedRental = localStorage.getItem('dashboard_rental_visible');
+                          const savedRentalValues = localStorage.getItem('rental_values_visible');
+                          
+                          if (savedFinancial !== null) {
+                              this.financialVisible = savedFinancial === 'true';
+                          }
+                          if (savedRental !== null) {
+                              this.rentalVisible = savedRental === 'true';
+                          }
+                          if (savedRentalValues !== null) {
+                              this.rentalValuesVisible = savedRentalValues === 'true';
+                          }
+                          
+                          this.setupEventListeners();
+                          this.updateVisibility();
+                      }
+                     
+                     setupEventListeners() {
+                          const financialBtn = document.getElementById('toggle-financial-info');
+                          const rentalBtn = document.getElementById('toggle-rental-info');
+                          const rentalValuesBtn = document.getElementById('toggle-rental-values');
+                          
+                          if (financialBtn) {
+                              financialBtn.addEventListener('click', () => this.toggleFinancial());
+                          }
+                          
+                          if (rentalBtn) {
+                              rentalBtn.addEventListener('click', () => this.toggleRental());
+                          }
+                          
+                          if (rentalValuesBtn) {
+                              rentalValuesBtn.addEventListener('click', () => this.toggleRentalValues());
+                          }
+                      }
+                     
+                     toggleFinancial() {
+                         this.financialVisible = !this.financialVisible;
+                         localStorage.setItem('dashboard_financial_visible', this.financialVisible.toString());
+                         this.updateVisibility();
+                         
+                         const action = this.financialVisible ? 'mostradas' : 'ocultadas';
+                         Utils.showAlert(`Informações financeiras ${action}`, 'info');
+                     }
+                     
+                     toggleRental() {
+                          this.rentalVisible = !this.rentalVisible;
+                          localStorage.setItem('dashboard_rental_visible', this.rentalVisible.toString());
+                          this.updateVisibility();
+                          
+                          const action = this.rentalVisible ? 'mostradas' : 'ocultadas';
+                          Utils.showAlert(`Informações de aluguéis ${action}`, 'info');
+                      }
+                      
+                      toggleRentalValues() {
+                          this.rentalValuesVisible = !this.rentalValuesVisible;
+                          localStorage.setItem('rental_values_visible', this.rentalValuesVisible.toString());
+                          this.updateVisibility();
+                          
+                          const action = this.rentalValuesVisible ? 'mostrados' : 'ocultados';
+                          Utils.showAlert(`Valores dos aluguéis ${action}`, 'info');
+                      }
+                     
+                     updateVisibility() {
+                         // Controlar cards financeiros
+                         const financialCards = document.querySelectorAll('.financial-info-card');
+                         const financialIcon = document.getElementById('financial-eye-icon');
+                         const financialBtn = document.getElementById('toggle-financial-info');
+                         
+                         financialCards.forEach(card => {
+                             if (this.financialVisible) {
+                                 card.style.display = 'block';
+                                 card.style.opacity = '1';
+                             } else {
+                                 card.style.display = 'none';
+                             }
+                         });
+                         
+                         if (financialIcon) {
+                             financialIcon.className = this.financialVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+                         }
+                         
+                         if (financialBtn) {
+                             financialBtn.className = this.financialVisible 
+                                 ? 'btn btn-outline-secondary btn-sm'
+                                 : 'btn btn-secondary btn-sm';
+                         }
+                         
+                         // Controlar cards de aluguéis
+                         const rentalCards = document.querySelectorAll('.rental-info-card');
+                         const rentalIcon = document.getElementById('rental-eye-icon');
+                         const rentalBtn = document.getElementById('toggle-rental-info');
+                         
+                         rentalCards.forEach(card => {
+                             if (this.rentalVisible) {
+                                 card.style.display = 'block';
+                                 card.style.opacity = '1';
+                             } else {
+                                 card.style.display = 'none';
+                             }
+                         });
+                         
+                         if (rentalIcon) {
+                             rentalIcon.className = this.rentalVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+                         }
+                         
+                         if (rentalBtn) {
+                             rentalBtn.className = this.rentalVisible 
+                                 ? 'btn btn-outline-secondary btn-sm'
+                                 : 'btn btn-secondary btn-sm';
+                         }
+                         
+                         // Controlar valores na seção de aluguéis
+                           const rentalValueElements = document.querySelectorAll('.rental-value-display');
+                           const rentalFinancialCards = document.querySelectorAll('.rental-financial-card');
+                           const rentalValuesIcon = document.getElementById('rental-values-eye-icon');
+                           const rentalValuesBtn = document.getElementById('toggle-rental-values');
+                           
+                           // Controlar valores individuais na tabela
+                           rentalValueElements.forEach(element => {
+                               if (this.rentalValuesVisible) {
+                                   element.style.visibility = 'visible';
+                                   // Restaurar valor original se estava oculto
+                                   if (element.textContent === '***') {
+                                       // Recarregar a seção para restaurar valores
+                                       if (typeof AlugueisManager !== 'undefined' && AlugueisManager.loadAlugueis) {
+                                           AlugueisManager.loadAlugueis();
+                                       }
+                                   }
+                               } else {
+                                   element.textContent = '***';
+                               }
+                           });
+                           
+                           // Controlar card "Receita Hoje"
+                           rentalFinancialCards.forEach(card => {
+                               if (this.rentalValuesVisible) {
+                                   card.style.display = 'block';
+                                   card.style.opacity = '1';
+                               } else {
+                                   card.style.display = 'none';
+                               }
+                           });
+                           
+                           if (rentalValuesIcon) {
+                               rentalValuesIcon.className = this.rentalValuesVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+                           }
+                           
+                           if (rentalValuesBtn) {
+                               rentalValuesBtn.className = this.rentalValuesVisible 
+                                   ? 'btn btn-outline-secondary btn-sm'
+                                   : 'btn btn-secondary btn-sm';
+                           }
+                          
+                          // Ocultar informações financeiras em outras seções também
+                          this.updateOtherSections();
+                      }
+                     
+                     updateOtherSections() {
+                         // Ocultar valores em tabelas e relatórios quando necessário
+                         const valueElements = document.querySelectorAll('.financial-value, .rental-count');
+                         
+                         valueElements.forEach(element => {
+                             if (element.classList.contains('financial-value') && !this.financialVisible) {
+                                 element.textContent = '***';
+                             } else if (element.classList.contains('rental-count') && !this.rentalVisible) {
+                                 element.textContent = '***';
+                             }
+                         });
+                     }
+                     
+                     // Método público para verificar se informações estão visíveis
+                     isFinancialVisible() {
+                         return this.financialVisible;
+                     }
+                     
+                     isRentalVisible() {
+                         return this.rentalVisible;
+                     }
+                 }
+                 
+                 // Inicializar gerenciadores
+                 let syncManager;
+                 let dashboardVisibility;
+                 
+                 document.addEventListener('DOMContentLoaded', () => {
+                     syncManager = new SyncManager();
+                     dashboardVisibility = new DashboardVisibility();
+                 });
+        
+        // Classes DataManager, LocalStorage, Utils e Validators estão em data-manager.js
+        
+        // Funções globais para abrir modais
+        function openTempoModal() {
+            TemposManager.openModal();
+        }
+        
+        function openClienteModal() {
+            ClientesManager.openModal();
+        }
+        
+        function openCarrinhoModal() {
+            CarrinhosManager.openModal();
+        }
+        
+        function openAluguelModal() {
+            AlugueisManager.openModal();
+        }
+        
+        // Navegação entre seções
+        function showSection(sectionName) {
+            // Esconder todas as seções
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remover classe active de todos os links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Mostrar seção selecionada
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Adicionar classe active ao link correspondente
+            const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Atualizar dashboard se necessário
+            if (sectionName === 'dashboard') {
+                DataManager.updateDashboard();
+            }
+        }
+        
+        // Funções utilitárias agora estão em Utils (data-manager.js)
+        
+        // Funções de backup/restore
+        function exportData() {
+            const data = {
+                tempos_aluguel: LocalStorage.get('tempos_aluguel'),
+                clientes: LocalStorage.get('clientes'),
+                carrinhos: LocalStorage.get('carrinhos'),
+                alugueis: LocalStorage.get('alugueis'),
+                manutencoes: LocalStorage.get('manutencoes'),
+                cupons: LocalStorage.get('cupons'),
+                exported_at: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sl-carrinhos-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Dados exportados com sucesso!');
+        }
+        
+        function importData() {
+            document.getElementById('import-file').click();
+        }
+        
+        function clearAllData() {
+            if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
+                LocalStorage.clear();
+                DataManager.initializeData();
+                DataManager.updateDashboard();
+                alert('Todos os dados foram limpos e reinicializados.');
+            }
+        }
+        
+        // Inicialização
+        $(document).ready(function() {
+            // Inicializar dados
+            DataManager.initializeData();
+            DataManager.updateDashboard();
+            
+            // Navegação do sidebar
+            $('.nav-link[data-section]').on('click', function(e) {
+                e.preventDefault();
+                const section = $(this).data('section');
+                showSection(section);
+            });
+            
+            // Toggle sidebar
+            $('#sidebarCollapse').on('click', function() {
+                $('#sidebar').toggleClass('active');
+            });
+            
+            // Importação de dados
+            $('#import-file').on('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            
+                            // Validar estrutura dos dados
+                            if (data.tempos_aluguel) LocalStorage.set('tempos_aluguel', data.tempos_aluguel);
+                            if (data.clientes) LocalStorage.set('clientes', data.clientes);
+                            if (data.carrinhos) LocalStorage.set('carrinhos', data.carrinhos);
+                            if (data.alugueis) LocalStorage.set('alugueis', data.alugueis);
+                            if (data.manutencoes) LocalStorage.set('manutencoes', data.manutencoes);
+                            if (data.cupons) LocalStorage.set('cupons', data.cupons);
+                            
+                            DataManager.updateDashboard();
+                            alert('Dados importados com sucesso!');
+                        } catch (error) {
+                            alert('Erro ao importar dados. Verifique se o arquivo está no formato correto.');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            
+            // Mostrar dashboard por padrão
+            showSection('dashboard');
+        });
+        
+        // Gerenciamento de Tempos de Aluguel
+        class TemposManager {
+            static loadTempos() {
+                const tempos = DataManager.getTemposAluguel();
+                const alugueis = DataManager.getAlugueis();
+                const tbody = document.getElementById('tempos-tbody');
+                
+                if (!tbody) return;
+                
+                tbody.innerHTML = '';
+                
+                tempos.forEach(tempo => {
+                    const alugueisDoTempo = alugueis.filter(a => a.tempo_id === tempo.id);
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td><strong>${tempo.nome}</strong></td>
+                        <td>
+                            <i class="fas fa-clock me-1 text-muted"></i>
+                            ${Utils.formatDuration(tempo.duracao)}
+                        </td>
+                        <td><strong class="text-success">${Utils.formatCurrency(tempo.valor)}</strong></td>
+                        <td><span class="badge bg-secondary">${tempo.categoria}</span></td>
+                        <td>
+                            ${tempo.ativo ? 
+                                '<span class="badge bg-success">Ativo</span>' : 
+                                '<span class="badge bg-danger">Inativo</span>'
+                            }
+                        </td>
+                        <td><span class="badge bg-info">${alugueisDoTempo.length}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="TemposManager.editTempo(${tempo.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="TemposManager.deleteTempo(${tempo.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+                
+                this.updateStats();
+            }
+            
+            static updateStats() {
+                const tempos = DataManager.getTemposAluguel();
+                const temposAtivos = tempos.filter(t => t.ativo);
+                
+                document.getElementById('total-tempos').textContent = tempos.length;
+                document.getElementById('tempos-ativos').textContent = temposAtivos.length;
+                
+                if (tempos.length > 0) {
+                    const valorMedio = tempos.reduce((sum, t) => sum + t.valor, 0) / tempos.length;
+                    const duracaoMedia = tempos.reduce((sum, t) => sum + t.duracao, 0) / tempos.length;
+                    
+                    document.getElementById('valor-medio').textContent = Utils.formatCurrency(valorMedio);
+                    document.getElementById('duracao-media').textContent = Utils.formatDuration(Math.round(duracaoMedia));
+                } else {
+                    document.getElementById('valor-medio').textContent = 'R$ 0,00';
+                    document.getElementById('duracao-media').textContent = '0 min';
+                }
+            }
+            
+            static openModal(tempo = null) {
+                const modal = new bootstrap.Modal(document.getElementById('tempoModal'));
+                const form = document.getElementById('tempoForm');
+                const title = document.getElementById('tempoModalTitle');
+                
+                form.reset();
+                form.classList.remove('was-validated');
+                
+                if (tempo) {
+                    title.textContent = 'Editar Tempo de Aluguel';
+                    document.getElementById('tempo-id').value = tempo.id;
+                    document.getElementById('tempo-nome').value = tempo.nome;
+                    document.getElementById('tempo-duracao').value = tempo.duracao;
+                    document.getElementById('tempo-valor').value = tempo.valor;
+                    document.getElementById('tempo-categoria').value = tempo.categoria;
+                    document.getElementById('tempo-ativo').checked = tempo.ativo;
+                    document.getElementById('tempo-descricao').value = tempo.descricao || '';
+                } else {
+                    title.textContent = 'Novo Tempo de Aluguel';
+                    document.getElementById('tempo-ativo').checked = true;
+                }
+                
+                modal.show();
+            }
+            
+            static saveTempo() {
+                const form = document.getElementById('tempoForm');
+                
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+                
+                const id = document.getElementById('tempo-id').value;
+                const tempoData = {
+                    nome: document.getElementById('tempo-nome').value,
+                    duracao: parseInt(document.getElementById('tempo-duracao').value),
+                    valor: parseFloat(document.getElementById('tempo-valor').value),
+                    categoria: document.getElementById('tempo-categoria').value,
+                    ativo: document.getElementById('tempo-ativo').checked,
+                    descricao: document.getElementById('tempo-descricao').value
+                };
+                
+                try {
+                    if (id) {
+                        DataManager.updateTempoAluguel(id, tempoData);
+                        Utils.showAlert('Tempo atualizado com sucesso!', 'success');
+                    } else {
+                        DataManager.addTempoAluguel(tempoData);
+                        Utils.showAlert('Tempo criado com sucesso!', 'success');
+                    }
+                    
+                    this.loadTempos();
+                    bootstrap.Modal.getInstance(document.getElementById('tempoModal')).hide();
+                } catch (error) {
+                    Utils.showAlert('Erro ao salvar tempo: ' + error.message, 'danger');
+                }
+            }
+            
+            static editTempo(id) {
+                const tempo = DataManager.getTemposAluguel().find(t => t.id === id);
+                if (tempo) {
+                    this.openModal(tempo);
+                }
+            }
+            
+            static deleteTempo(id) {
+                const tempo = DataManager.getTemposAluguel().find(t => t.id === id);
+                if (!tempo) return;
+                
+                const alugueis = DataManager.getAlugueis().filter(a => a.tempo_id === id);
+                
+                let message = `Tem certeza que deseja excluir o tempo "${tempo.nome}"?`;
+                if (alugueis.length > 0) {
+                    message += `\n\nEste tempo possui ${alugueis.length} aluguel(is) associado(s).`;
+                }
+                
+                Utils.confirmAction(message, () => {
+                    if (DataManager.deleteTempoAluguel(id)) {
+                        Utils.showAlert('Tempo excluído com sucesso!', 'success');
+                        this.loadTempos();
+                    } else {
+                        Utils.showAlert('Erro ao excluir tempo.', 'danger');
+                    }
+                });
+            }
+        }
+        
+        // Event listeners para Tempos de Aluguel
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar event listeners após um pequeno delay para garantir que os elementos existam
+            setTimeout(() => {
+                // Botão salvar tempo
+                const salvarTempoBtn = document.getElementById('salvar-tempo');
+                if (salvarTempoBtn) {
+                    salvarTempoBtn.addEventListener('click', () => TemposManager.saveTempo());
+                }
+                
+                // Botão salvar cliente
+                const salvarClienteBtn = document.getElementById('salvar-cliente');
+                if (salvarClienteBtn) {
+                    salvarClienteBtn.addEventListener('click', () => ClientesManager.saveCliente());
+                }
+                
+                // Botão salvar carrinho
+                 const salvarCarrinhoBtn = document.getElementById('salvar-carrinho');
+                 if (salvarCarrinhoBtn) {
+                     salvarCarrinhoBtn.addEventListener('click', () => CarrinhosManager.saveCarrinho());
+                 }
+                 
+                 // Botão salvar aluguel
+                 const salvarAluguelBtn = document.getElementById('salvar-aluguel');
+                 if (salvarAluguelBtn) {
+                     salvarAluguelBtn.addEventListener('click', () => AlugueisManager.saveAluguel());
+                 }
+                 
+                 // Botão salvar cliente rápido
+                 const salvarClienteRapidoBtn = document.getElementById('salvar-cliente-rapido');
+                 if (salvarClienteRapidoBtn) {
+                     salvarClienteRapidoBtn.addEventListener('click', () => AlugueisManager.saveClienteRapido());
+                 }
+                
+                // Filtros de busca
+                const searchInput = document.getElementById('search-clientes');
+                if (searchInput) {
+                    const debouncedSearch = function() {
+                        let timeout;
+                        return function() {
+                            clearTimeout(timeout);
+                            timeout = setTimeout(() => ClientesManager.loadClientes(), 300);
+                        };
+                    }();
+                    searchInput.addEventListener('input', debouncedSearch);
+                }
+                
+                const filterStatus = document.getElementById('filter-status');
+                if (filterStatus) {
+                    filterStatus.addEventListener('change', () => ClientesManager.loadClientes());
+                }
+            }, 500);
+            
+            // Carregar tempos quando a seção for mostrada
+             const originalShowSection = window.showSection;
+             window.showSection = function(sectionName) {
+                  originalShowSection(sectionName);
+                  
+                  // Não pausar mais automaticamente - usuário controla manualmente
+                  
+                  if (sectionName === 'tempos-aluguel') {
+                      setTimeout(() => TemposManager.loadTempos(), 100);
+                  } else if (sectionName === 'clientes') {
+                      setTimeout(() => ClientesManager.loadClientes(), 100);
+                  } else if (sectionName === 'carrinhos') {
+                      setTimeout(() => CarrinhosManager.loadCarrinhos(), 100);
+                  } else if (sectionName === 'alugueis') {
+                      setTimeout(() => AlugueisManager.loadAlugueis(), 100);
+                  } else if (sectionName === 'relatorios') {
+                      setTimeout(() => RelatoriosManager.loadRelatorios(), 100);
+                  }
+              };
+             
+             // Máscaras de input
+             $(document).on('input', '.cpf-mask', function() {
+                 let value = this.value.replace(/\D/g, '');
+                 value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                 value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                 value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                 this.value = value;
+             });
+             
+             $(document).on('input', '.telefone-mask', function() {
+                 let value = this.value.replace(/\D/g, '');
+                 if (value.length <= 10) {
+                     value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                     value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                 } else {
+                     value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                     value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                 }
+                 this.value = value;
+             });
+             
+             $(document).on('input', '.cep-mask', function() {
+                 let value = this.value.replace(/\D/g, '');
+                 value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                 this.value = value;
+             });
+         });
+         
+         // Gerenciamento de Clientes
+         class ClientesManager {
+             static loadClientes() {
+                 const clientes = DataManager.getClientes();
+                 const alugueis = DataManager.getAlugueis();
+                 const tbody = document.getElementById('clientes-tbody');
+                 
+                 if (!tbody) return;
+                 
+                 // Aplicar filtros
+                 const searchTerm = document.getElementById('search-clientes')?.value.toLowerCase() || '';
+                 const statusFilter = document.getElementById('filter-status')?.value || '';
+                 
+                 let filteredClientes = clientes;
+                 
+                 if (searchTerm) {
+                     filteredClientes = filteredClientes.filter(cliente => 
+                         cliente.nome.toLowerCase().includes(searchTerm) ||
+                         cliente.telefone.includes(searchTerm) ||
+                         (cliente.email && cliente.email.toLowerCase().includes(searchTerm))
+                     );
+                 }
+                 
+                 if (statusFilter) {
+                     filteredClientes = filteredClientes.filter(cliente => 
+                         statusFilter === 'ativo' ? cliente.ativo !== false : cliente.ativo === false
+                     );
+                 }
+                 
+                 tbody.innerHTML = '';
+                 
+                 filteredClientes.forEach(cliente => {
+                     const alugueisDoCliente = alugueis.filter(a => a.cliente_id === cliente.id);
+                     const row = document.createElement('tr');
+                     
+                     row.innerHTML = `
+                         <td>
+                             <strong>${cliente.nome}</strong>
+                             ${cliente.ativo === false ? '<br><small class="text-muted">Inativo</small>' : ''}
+                         </td>
+                         <td>
+                             <i class="fas fa-phone me-1 text-muted"></i>
+                             ${cliente.telefone}
+                         </td>
+                         <td>
+                             ${cliente.email ? 
+                                 `<i class="fas fa-envelope me-1 text-muted"></i>${cliente.email}` : 
+                                 '<span class="text-muted">Não informado</span>'
+                             }
+                         </td>
+                         <td>
+                             <code>${cliente.cpf}</code>
+                         </td>
+                         <td>
+                             <span class="badge bg-info">${alugueisDoCliente.length}</span>
+                         </td>
+                         <td>
+                             <small class="text-muted">${Utils.formatDate(cliente.created_at)}</small>
+                         </td>
+                         <td>
+                             <button class="btn btn-sm btn-outline-primary me-1" onclick="ClientesManager.editCliente(${cliente.id})" title="Editar">
+                                 <i class="fas fa-edit"></i>
+                             </button>
+                             <button class="btn btn-sm btn-outline-info me-1" onclick="ClientesManager.viewCliente(${cliente.id})" title="Ver Detalhes">
+                                 <i class="fas fa-eye"></i>
+                             </button>
+                             <button class="btn btn-sm btn-outline-danger" onclick="ClientesManager.deleteCliente(${cliente.id})" title="Excluir">
+                                 <i class="fas fa-trash"></i>
+                             </button>
+                         </td>
+                     `;
+                     
+                     tbody.appendChild(row);
+                 });
+                 
+                 this.updateStats();
+             }
+             
+             static updateStats() {
+                 const clientes = DataManager.getClientes();
+                 const alugueis = DataManager.getAlugueis();
+                 const clientesAtivos = clientes.filter(c => c.ativo !== false);
+                 
+                 // Clientes novos este mês
+                 const inicioMes = new Date();
+                 inicioMes.setDate(1);
+                 inicioMes.setHours(0, 0, 0, 0);
+                 const novosMes = clientes.filter(c => new Date(c.created_at) >= inicioMes);
+                 
+                 document.getElementById('total-clientes-stats').textContent = clientes.length;
+                 document.getElementById('clientes-ativos').textContent = clientesAtivos.length;
+                 document.getElementById('novos-mes').textContent = novosMes.length;
+                 document.getElementById('total-alugueis-clientes').textContent = alugueis.length;
+             }
+             
+             static openModal(cliente = null) {
+                 const modal = new bootstrap.Modal(document.getElementById('clienteModal'));
+                 const form = document.getElementById('clienteForm');
+                 const title = document.getElementById('clienteModalTitle');
+                 
+                 form.reset();
+                 form.classList.remove('was-validated');
+                 
+                 if (cliente) {
+                     title.textContent = 'Editar Cliente';
+                     document.getElementById('cliente-id').value = cliente.id;
+                     document.getElementById('cliente-nome').value = cliente.nome;
+                     document.getElementById('cliente-cpf').value = cliente.cpf;
+                     document.getElementById('cliente-telefone').value = cliente.telefone;
+                     document.getElementById('cliente-email').value = cliente.email || '';
+                     document.getElementById('cliente-endereco').value = cliente.endereco || '';
+                     document.getElementById('cliente-cep').value = cliente.cep || '';
+                     document.getElementById('cliente-cidade').value = cliente.cidade || '';
+                     document.getElementById('cliente-estado').value = cliente.estado || '';
+                     document.getElementById('cliente-observacoes').value = cliente.observacoes || '';
+                     document.getElementById('cliente-ativo').checked = cliente.ativo !== false;
+                 } else {
+                     title.textContent = 'Novo Cliente';
+                     document.getElementById('cliente-ativo').checked = true;
+                 }
+                 
+                 modal.show();
+             }
+             
+             static saveCliente() {
+                 const form = document.getElementById('clienteForm');
+                 
+                 if (!form.checkValidity()) {
+                     form.classList.add('was-validated');
+                     return;
+                 }
+                 
+                 const id = document.getElementById('cliente-id').value;
+                 const cpf = document.getElementById('cliente-cpf').value;
+                 const email = document.getElementById('cliente-email').value;
+                 
+                 // Validações
+                 if (cpf && !Validators.validateCPF(cpf)) {
+                     Utils.showAlert('CPF inválido.', 'danger');
+                     return;
+                 }
+                 
+                 if (email && !Validators.validateEmail(email)) {
+                     Utils.showAlert('Email inválido.', 'danger');
+                     return;
+                 }
+                 
+                 // Verificar CPF duplicado apenas se preenchido
+                 if (cpf) {
+                     const clientes = DataManager.getClientes();
+                     const cpfExistente = clientes.find(c => c.cpf === cpf && c.id !== parseInt(id));
+                     if (cpfExistente) {
+                         Utils.showAlert('Já existe um cliente com este CPF.', 'danger');
+                         return;
+                     }
+                 }
+                 
+                 const clienteData = {
+                     nome: document.getElementById('cliente-nome').value,
+                     cpf: cpf,
+                     telefone: document.getElementById('cliente-telefone').value,
+                     email: email || null,
+                     endereco: document.getElementById('cliente-endereco').value || null,
+                     cep: document.getElementById('cliente-cep').value || null,
+                     cidade: document.getElementById('cliente-cidade').value || null,
+                     estado: document.getElementById('cliente-estado').value || null,
+                     observacoes: document.getElementById('cliente-observacoes').value || null,
+                     ativo: document.getElementById('cliente-ativo').checked
+                 };
+                 
+                 try {
+                     if (id) {
+                         DataManager.updateCliente(id, clienteData);
+                         Utils.showAlert('Cliente atualizado com sucesso!', 'success');
+                     } else {
+                         DataManager.addCliente(clienteData);
+                         Utils.showAlert('Cliente criado com sucesso!', 'success');
+                     }
+                     
+                     this.loadClientes();
+                     bootstrap.Modal.getInstance(document.getElementById('clienteModal')).hide();
+                 } catch (error) {
+                     Utils.showAlert('Erro ao salvar cliente: ' + error.message, 'danger');
+                 }
+             }
+             
+             static editCliente(id) {
+                 const cliente = DataManager.getClientes().find(c => c.id === id);
+                 if (cliente) {
+                     this.openModal(cliente);
+                 }
+             }
+             
+             static viewCliente(id) {
+                 const cliente = DataManager.getClientes().find(c => c.id === id);
+                 const alugueis = DataManager.getAlugueis().filter(a => a.cliente_id === id);
+                 
+                 if (!cliente) return;
+                 
+                 const receita = alugueis.reduce((total, aluguel) => total + (aluguel.valor || 0), 0);
+                 
+                 let detalhes = `
+                     <strong>Nome:</strong> ${cliente.nome}<br>
+                     <strong>CPF:</strong> ${cliente.cpf}<br>
+                     <strong>Telefone:</strong> ${cliente.telefone}<br>
+                 `;
+                 
+                 if (cliente.email) detalhes += `<strong>Email:</strong> ${cliente.email}<br>`;
+                 if (cliente.endereco) detalhes += `<strong>Endereço:</strong> ${cliente.endereco}<br>`;
+                 if (cliente.cep) detalhes += `<strong>CEP:</strong> ${cliente.cep}<br>`;
+                 if (cliente.cidade) detalhes += `<strong>Cidade:</strong> ${cliente.cidade}<br>`;
+                 if (cliente.estado) detalhes += `<strong>Estado:</strong> ${cliente.estado}<br>`;
+                 
+                 detalhes += `
+                     <strong>Status:</strong> ${cliente.ativo !== false ? 'Ativo' : 'Inativo'}<br>
+                     <strong>Cadastro:</strong> ${Utils.formatDateTime(cliente.created_at)}<br>
+                     <strong>Total de Aluguéis:</strong> ${alugueis.length}<br>
+                     <strong>Receita Total:</strong> ${Utils.formatCurrency(receita)}
+                 `;
+                 
+                 if (cliente.observacoes) {
+                     detalhes += `<br><strong>Observações:</strong><br>${cliente.observacoes}`;
+                 }
+                 
+                 Utils.showAlert(detalhes, 'info');
+             }
+             
+             static deleteCliente(id) {
+                 const cliente = DataManager.getClientes().find(c => c.id === id);
+                 if (!cliente) return;
+                 
+                 const alugueis = DataManager.getAlugueis().filter(a => a.cliente_id === id);
+                 
+                 let message = `Tem certeza que deseja excluir o cliente "${cliente.nome}"?`;
+                 if (alugueis.length > 0) {
+                     message += `\n\nEste cliente possui ${alugueis.length} aluguel(is) associado(s).`;
+                 }
+                 
+                 Utils.confirmAction(message, () => {
+                     if (DataManager.deleteCliente(id)) {
+                         Utils.showAlert('Cliente excluído com sucesso!', 'success');
+                         this.loadClientes();
+                     } else {
+                         Utils.showAlert('Erro ao excluir cliente.', 'danger');
+                     }
+                 });
+             }
+             
+             static clearFilters() {
+                 document.getElementById('search-clientes').value = '';
+                 document.getElementById('filter-status').value = '';
+                 this.loadClientes();
+             }
+         }
+         
+         // Event listeners já configurados acima
+          
+          // Gerenciamento de Carrinhos
+          class CarrinhosManager {
+              static loadCarrinhos() {
+                  const carrinhos = DataManager.getCarrinhos();
+                  const alugueis = DataManager.getAlugueis();
+                  const tbody = document.getElementById('carrinhos-tbody');
+                  
+                  if (!tbody) return;
+                  
+                  tbody.innerHTML = '';
+                  
+                  carrinhos.forEach(carrinho => {
+                      const alugueisDoCarrinho = alugueis.filter(a => a.carrinho_id === carrinho.id);
+                      const row = document.createElement('tr');
+                      
+                      let statusBadge = '';
+                      switch(carrinho.status) {
+                          case 'Disponível':
+                              statusBadge = '<span class="badge bg-success">Disponível</span>';
+                              break;
+                          case 'Em Uso':
+                              statusBadge = '<span class="badge bg-warning">Em Uso</span>';
+                              break;
+                          case 'Em Manutenção':
+                              statusBadge = '<span class="badge bg-danger">Em Manutenção</span>';
+                              break;
+                          case 'Inativo':
+                              statusBadge = '<span class="badge bg-secondary">Inativo</span>';
+                              break;
+                          default:
+                              statusBadge = '<span class="badge bg-secondary">' + carrinho.status + '</span>';
+                      }
+                      
+                      let bateriaColor = 'success';
+                      if (carrinho.bateria < 30) bateriaColor = 'danger';
+                      else if (carrinho.bateria < 60) bateriaColor = 'warning';
+                      
+                      row.innerHTML = `
+                          <td><strong>${carrinho.numero}</strong></td>
+                          <td>${carrinho.modelo}</td>
+                          <td>${carrinho.cor || '<span class="text-muted">N/A</span>'}</td>
+                          <td>${statusBadge}</td>
+                          <td>
+                              <div class="d-flex align-items-center">
+                                  <div class="progress me-2" style="width: 60px; height: 8px;">
+                                      <div class="progress-bar bg-${bateriaColor}" style="width: ${carrinho.bateria}%"></div>
+                                  </div>
+                                  <small>${carrinho.bateria}%</small>
+                              </div>
+                          </td>
+                          <td><span class="badge bg-info">${alugueisDoCarrinho.length}</span></td>
+                          <td>
+                              <button class="btn btn-sm btn-outline-primary me-1" onclick="CarrinhosManager.editCarrinho(${carrinho.id})" title="Editar">
+                                  <i class="fas fa-edit"></i>
+                              </button>
+                              <button class="btn btn-sm btn-outline-danger" onclick="CarrinhosManager.deleteCarrinho(${carrinho.id})" title="Excluir">
+                                  <i class="fas fa-trash"></i>
+                              </button>
+                          </td>
+                      `;
+                      
+                      tbody.appendChild(row);
+                  });
+                  
+                  this.updateStats();
+              }
+              
+              static updateStats() {
+                  const carrinhos = DataManager.getCarrinhos();
+                  const disponiveis = carrinhos.filter(c => c.status === 'Disponível').length;
+                  const emUso = carrinhos.filter(c => c.status === 'Em Uso').length;
+                  const manutencao = carrinhos.filter(c => c.status === 'Em Manutenção').length;
+                  
+                  document.getElementById('total-carrinhos-stats').textContent = carrinhos.length;
+                  document.getElementById('carrinhos-disponiveis').textContent = disponiveis;
+                  document.getElementById('carrinhos-em-uso').textContent = emUso;
+                  document.getElementById('carrinhos-manutencao').textContent = manutencao;
+              }
+              
+              static openModal(carrinho = null) {
+                  const modal = new bootstrap.Modal(document.getElementById('carrinhoModal'));
+                  const form = document.getElementById('carrinhoForm');
+                  const title = document.getElementById('carrinhoModalTitle');
+                  
+                  form.reset();
+                  form.classList.remove('was-validated');
+                  
+                  if (carrinho) {
+                      title.textContent = 'Editar Carrinho';
+                      document.getElementById('carrinho-id').value = carrinho.id;
+                      document.getElementById('carrinho-numero').value = carrinho.numero;
+                      document.getElementById('carrinho-modelo').value = carrinho.modelo;
+                      document.getElementById('carrinho-cor').value = carrinho.cor || '';
+                      document.getElementById('carrinho-bateria').value = carrinho.bateria || 100;
+                      document.getElementById('carrinho-status').value = carrinho.status || 'Disponível';
+                      document.getElementById('carrinho-observacoes').value = carrinho.observacoes || '';
+                  } else {
+                      title.textContent = 'Novo Carrinho';
+                      document.getElementById('carrinho-bateria').value = 100;
+                      document.getElementById('carrinho-status').value = 'Disponível';
+                  }
+                  
+                  modal.show();
+              }
+              
+              static saveCarrinho() {
+                  const form = document.getElementById('carrinhoForm');
+                  
+                  if (!form.checkValidity()) {
+                      form.classList.add('was-validated');
+                      return;
+                  }
+                  
+                  const id = document.getElementById('carrinho-id').value;
+                  const numero = document.getElementById('carrinho-numero').value;
+                  
+                  // Verificar número duplicado
+                  const carrinhos = DataManager.getCarrinhos();
+                  const numeroExistente = carrinhos.find(c => c.numero === numero && c.id !== parseInt(id));
+                  if (numeroExistente) {
+                      Utils.showAlert('Já existe um carrinho com este número.', 'danger');
+                      return;
+                  }
+                  
+                  const carrinhoData = {
+                      numero: numero,
+                      modelo: document.getElementById('carrinho-modelo').value,
+                      cor: document.getElementById('carrinho-cor').value || null,
+                      bateria: parseInt(document.getElementById('carrinho-bateria').value) || 100,
+                      status: document.getElementById('carrinho-status').value,
+                      observacoes: document.getElementById('carrinho-observacoes').value || null
+                  };
+                  
+                  try {
+                      if (id) {
+                          DataManager.updateCarrinho(id, carrinhoData);
+                          Utils.showAlert('Carrinho atualizado com sucesso!', 'success');
+                      } else {
+                          DataManager.addCarrinho(carrinhoData);
+                          Utils.showAlert('Carrinho criado com sucesso!', 'success');
+                      }
+                      
+                      this.loadCarrinhos();
+                      bootstrap.Modal.getInstance(document.getElementById('carrinhoModal')).hide();
+                  } catch (error) {
+                      Utils.showAlert('Erro ao salvar carrinho: ' + error.message, 'danger');
+                  }
+              }
+              
+              static editCarrinho(id) {
+                  const carrinho = DataManager.getCarrinhos().find(c => c.id === id);
+                  if (carrinho) {
+                      this.openModal(carrinho);
+                  }
+              }
+              
+              static deleteCarrinho(id) {
+                  const carrinho = DataManager.getCarrinhos().find(c => c.id === id);
+                  if (!carrinho) return;
+                  
+                  const alugueis = DataManager.getAlugueis().filter(a => a.carrinho_id === id);
+                  
+                  let message = `Tem certeza que deseja excluir o carrinho "${carrinho.numero}"?`;
+                  if (alugueis.length > 0) {
+                      message += `\n\nEste carrinho possui ${alugueis.length} aluguel(is) associado(s).`;
+                  }
+                  
+                  Utils.confirmAction(message, () => {
+                      if (DataManager.deleteCarrinho(id)) {
+                          Utils.showAlert('Carrinho excluído com sucesso!', 'success');
+                          this.loadCarrinhos();
+                      } else {
+                          Utils.showAlert('Erro ao excluir carrinho.', 'danger');
+                      }
+                  });
+               }
+           }
+           
+           // Gerenciamento de Aluguéis (Básico)
+           class AlugueisManager {
+               static loadAlugueis() {
+                   const alugueis = DataManager.getAlugueis();
+                   const tbody = document.getElementById('alugueis-tbody');
+                   
+                   if (!tbody) return;
+                   
+                   tbody.innerHTML = '';
+                   
+                   if (alugueis.length === 0) {
+                       tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Nenhum aluguel encontrado</td></tr>';
+                       return;
+                   }
+                   
+                   alugueis.forEach(aluguel => {
+                       const row = document.createElement('tr');
+                       
+                       let statusBadge = '';
+                       switch(aluguel.status) {
+                           case 'Em Andamento':
+                               statusBadge = '<span class="badge bg-success">Em Andamento</span>';
+                               break;
+                           case 'Finalizado':
+                               statusBadge = '<span class="badge bg-secondary">Finalizado</span>';
+                               break;
+                           case 'Cancelado':
+                               statusBadge = '<span class="badge bg-danger">Cancelado</span>';
+                               break;
+                           default:
+                               statusBadge = '<span class="badge bg-warning">Em Andamento</span>';
+                       }
+                       
+                       // Calcular tempo restante
+                       let tempoRestanteHtml = '<span class="text-muted">N/A</span>';
+                       if (aluguel.status === 'Em Andamento' && aluguel.data_inicio && aluguel.tempo_duracao) {
+                           tempoRestanteHtml = `<span class="countdown text-primary fw-bold" data-aluguel-id="${aluguel.id}" data-inicio="${aluguel.data_inicio}" data-duracao="${aluguel.tempo_duracao}">Calculando...</span>`;
+                       } else if (aluguel.status === 'Finalizado') {
+                           tempoRestanteHtml = '<span class="text-success"><i class="fas fa-check"></i> Finalizado</span>';
+                       } else if (aluguel.status === 'Cancelado') {
+                           tempoRestanteHtml = '<span class="text-danger"><i class="fas fa-times"></i> Cancelado</span>';
+                       }
+                       
+                       // Botões individuais de controle para aluguéis em andamento
+                       let controlesIndividuais = '';
+                       if (aluguel.status === 'Em Andamento') {
+                           const isPaused = this.pausedRentals && this.pausedRentals.includes(aluguel.id);
+                           if (isPaused) {
+                               controlesIndividuais = `
+                                   <button class="btn btn-xs btn-success me-1" onclick="AlugueisManager.resumeIndividual(${aluguel.id})" title="Retomar">
+                                       <i class="fas fa-play"></i>
+                                   </button>`;
+                           } else {
+                               controlesIndividuais = `
+                                   <button class="btn btn-xs btn-warning me-1" onclick="AlugueisManager.pauseIndividual(${aluguel.id})" title="Pausar">
+                                       <i class="fas fa-pause"></i>
+                                   </button>`;
+                           }
+                       }
+                       
+                       row.innerHTML = `
+                           <td>
+                               <div class="d-flex align-items-center">
+                                   ${controlesIndividuais}
+                                   <strong>${aluguel.cliente_nome || 'N/A'}</strong>
+                               </div>
+                           </td>
+                           <td>${aluguel.carrinho_numero || 'N/A'}</td>
+                           <td>${aluguel.tempo_nome || 'N/A'}</td>
+                           <td><strong class="text-success rental-value-display">${Utils.formatCurrency(aluguel.valor || 0)}</strong></td>
+                           <td><small>${Utils.formatDateTime(aluguel.data_inicio || aluguel.created_at)}</small></td>
+                           <td>${tempoRestanteHtml}</td>
+                           <td>${statusBadge}</td>
+                           <td>
+                               <button class="btn btn-sm btn-outline-primary me-1" onclick="AlugueisManager.editAluguel(${aluguel.id})" title="Editar">
+                                   <i class="fas fa-edit"></i>
+                               </button>
+                               <button class="btn btn-sm btn-outline-info me-1" onclick="AlugueisManager.viewAluguel(${aluguel.id})" title="Ver Detalhes">
+                                   <i class="fas fa-eye"></i>
+                               </button>
+                               <button class="btn btn-sm btn-outline-danger" onclick="AlugueisManager.deleteAluguel(${aluguel.id})" title="Excluir">
+                                   <i class="fas fa-trash"></i>
+                               </button>
+                           </td>
+                       `;
+                       
+                       tbody.appendChild(row);
+                   });
+                   
+                   this.updateStats();
+                   
+                   // Iniciar contagem regressiva para aluguéis em andamento
+                   setTimeout(() => this.startCountdowns(), 100);
+               }
+               
+               static startCountdowns() {
+                   // Limpar timer anterior se existir
+                   if (this.countdownInterval) {
+                       clearInterval(this.countdownInterval);
+                   }
+                   
+                   // Iniciar novo timer que atualiza a cada segundo
+                   this.countdownInterval = setInterval(() => {
+                       this.updateCountdowns();
+                   }, 1000);
+                   
+                   // Atualizar imediatamente
+                   this.updateCountdowns();
+                   
+                   // Atualizar estado dos botões
+                   this.updateControlButtons('running');
+               }
+               
+               static pauseCountdowns() {
+                   if (this.countdownInterval) {
+                       clearInterval(this.countdownInterval);
+                       this.countdownInterval = null;
+                   }
+                   
+                   // Mostrar status pausado nos contadores
+                   const countdownElements = document.querySelectorAll('.countdown');
+                   countdownElements.forEach(element => {
+                       const currentText = element.innerHTML;
+                       if (!currentText.includes('PAUSADO')) {
+                           element.innerHTML = `<span class="text-warning"><i class="fas fa-pause"></i> PAUSADO</span> - ${currentText}`;
+                       }
+                   });
+                   
+                   this.updateControlButtons('paused');
+                   Utils.showAlert('Contadores pausados. Clique em Iniciar para retomar.', 'info');
+               }
+               
+               static stopCountdowns() {
+                   if (this.countdownInterval) {
+                       clearInterval(this.countdownInterval);
+                       this.countdownInterval = null;
+                   }
+                   
+                   // Limpar todos os contadores
+                   const countdownElements = document.querySelectorAll('.countdown');
+                   countdownElements.forEach(element => {
+                       element.innerHTML = '<span class="text-muted"><i class="fas fa-stop"></i> Parado</span>';
+                   });
+                   
+                   this.updateControlButtons('stopped');
+                   Utils.showAlert('Contadores parados. Clique em Iniciar para reativar.', 'info');
+               }
+               
+               static updateControlButtons(state) {
+                   const btnIniciar = document.getElementById('btn-iniciar-timers');
+                   const btnPausar = document.getElementById('btn-pausar-timers');
+                   const btnParar = document.getElementById('btn-parar-timers');
+                   
+                   if (!btnIniciar || !btnPausar || !btnParar) return;
+                   
+                   // Reset classes
+                   [btnIniciar, btnPausar, btnParar].forEach(btn => {
+                       btn.classList.remove('active', 'disabled');
+                   });
+                   
+                   switch(state) {
+                       case 'running':
+                           btnIniciar.classList.add('active');
+                           break;
+                       case 'paused':
+                           btnPausar.classList.add('active');
+                           break;
+                       case 'stopped':
+                           btnParar.classList.add('active');
+                           break;
+                   }
+               }
+               
+               // Controles individuais de aluguel
+               static pauseIndividual(aluguelId) {
+                   if (!this.pausedRentals) {
+                       this.pausedRentals = [];
+                   }
+                   
+                   if (!this.pausedRentals.includes(aluguelId)) {
+                       this.pausedRentals.push(aluguelId);
+                   }
+                   
+                   // Atualizar display do contador específico
+                   const countdownElement = document.querySelector(`[data-aluguel-id="${aluguelId}"]`);
+                   if (countdownElement) {
+                       const currentText = countdownElement.innerHTML;
+                       if (!currentText.includes('PAUSADO')) {
+                           countdownElement.innerHTML = `<span class="text-warning"><i class="fas fa-pause"></i> PAUSADO</span>`;
+                       }
+                   }
+                   
+                   // Recarregar lista para atualizar botões
+                   this.loadAlugueis();
+                   
+                   const aluguel = DataManager.getAlugueis().find(a => a.id === aluguelId);
+                   Utils.showAlert(`Aluguel de ${aluguel?.cliente_nome || 'cliente'} pausado.`, 'info');
+               }
+               
+               static resumeIndividual(aluguelId) {
+                   if (this.pausedRentals) {
+                       this.pausedRentals = this.pausedRentals.filter(id => id !== aluguelId);
+                   }
+                   
+                   // Recarregar lista para atualizar botões e retomar contagem
+                   this.loadAlugueis();
+                   
+                   const aluguel = DataManager.getAlugueis().find(a => a.id === aluguelId);
+                   Utils.showAlert(`Aluguel de ${aluguel?.cliente_nome || 'cliente'} retomado.`, 'success');
+               }
+               
+               static updateCountdowns() {
+                   const countdownElements = document.querySelectorAll('.countdown');
+                   const now = new Date();
+                   
+                   countdownElements.forEach(element => {
+                       const aluguelId = parseInt(element.dataset.aluguelId);
+                       
+                       // Verificar se este aluguel está pausado individualmente
+                       if (this.pausedRentals && this.pausedRentals.includes(aluguelId)) {
+                           // Manter status pausado
+                           if (!element.innerHTML.includes('PAUSADO')) {
+                               element.innerHTML = `<span class="text-warning"><i class="fas fa-pause"></i> PAUSADO</span>`;
+                           }
+                           return; // Pular este aluguel
+                       }
+                       
+                       const dataInicio = new Date(element.dataset.inicio);
+                       let duracao = parseInt(element.dataset.duracao); // em minutos
+                       
+                       // Debug: verificar se a duração está correta
+                       console.log(`Aluguel ${aluguelId}: Duração = ${duracao} minutos`);
+                       
+                       // Se a duração parecer incorreta, buscar do banco de dados
+                       if (!duracao || duracao > 1440) { // mais de 24 horas parece erro
+                           const aluguel = DataManager.getAlugueis().find(a => a.id === aluguelId);
+                           if (aluguel && aluguel.tempo_duracao) {
+                               duracao = aluguel.tempo_duracao;
+                               element.dataset.duracao = duracao; // atualizar o dataset
+                               console.log(`Corrigido para: ${duracao} minutos`);
+                           }
+                       }
+                       
+                       // Calcular data de fim
+                       const dataFim = new Date(dataInicio.getTime() + (duracao * 60000));
+                       
+                       // Calcular tempo restante em milissegundos
+                       const tempoRestante = dataFim.getTime() - now.getTime();
+                       
+                       if (tempoRestante <= 0) {
+                           // Tempo esgotado
+                           element.innerHTML = '<span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle"></i> TEMPO ESGOTADO!</span>';
+                           element.classList.remove('text-primary');
+                           element.classList.add('text-danger');
+                           
+                           // Opcional: Finalizar aluguel automaticamente
+                           this.autoFinishExpiredRental(aluguelId);
+                       } else {
+                           // Converter para horas, minutos e segundos
+                           const horas = Math.floor(tempoRestante / (1000 * 60 * 60));
+                           const minutos = Math.floor((tempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+                           const segundos = Math.floor((tempoRestante % (1000 * 60)) / 1000);
+                           
+                           // Formatar display
+                           let displayTime = '';
+                           if (horas > 0) {
+                               displayTime = `${horas}h ${minutos}m ${segundos}s`;
+                           } else if (minutos > 0) {
+                               displayTime = `${minutos}m ${segundos}s`;
+                           } else {
+                               displayTime = `${segundos}s`;
+                           }
+                           
+                           // Mudar cor conforme o tempo restante
+                           if (tempoRestante < 300000) { // Menos de 5 minutos
+                               element.innerHTML = `<i class="fas fa-clock"></i> ${displayTime}`;
+                               element.classList.remove('text-primary');
+                               element.classList.add('text-danger');
+                           } else if (tempoRestante < 600000) { // Menos de 10 minutos
+                               element.innerHTML = `<i class="fas fa-clock"></i> ${displayTime}`;
+                               element.classList.remove('text-primary');
+                               element.classList.add('text-warning');
+                           } else {
+                               element.innerHTML = `<i class="fas fa-clock"></i> ${displayTime}`;
+                               element.classList.remove('text-warning', 'text-danger');
+                               element.classList.add('text-primary');
+                           }
+                       }
+                   });
+               }
+               
+               static autoFinishExpiredRental(aluguelId) {
+                   // Verificar se o aluguel ainda está em andamento
+                   const aluguel = DataManager.getAlugueis().find(a => a.id === parseInt(aluguelId));
+                   if (aluguel && aluguel.status === 'Em Andamento') {
+                       // Finalizar automaticamente
+                       DataManager.updateAluguel(aluguelId, {
+                           status: 'Finalizado',
+                           data_fim_real: new Date().toISOString()
+                       });
+                       
+                       // Mostrar notificação
+                       Utils.showAlert(`Aluguel do cliente ${aluguel.cliente_nome} foi finalizado automaticamente (tempo esgotado).`, 'warning');
+                       
+                       // Recarregar a lista
+                       setTimeout(() => {
+                           this.loadAlugueis();
+                           DataManager.updateDashboard();
+                       }, 2000);
+                   }
+               }
+               
+               static updateStats() {
+                   const alugueis = DataManager.getAlugueis();
+                   const hoje = new Date().toDateString();
+                   const alugueisHoje = alugueis.filter(a => new Date(a.created_at).toDateString() === hoje);
+                   const receitaHoje = alugueisHoje.reduce((total, a) => total + (a.valor || 0), 0);
+                   const emAndamento = alugueis.filter(a => a.status !== 'Finalizado' && a.status !== 'Cancelado').length;
+                   
+                   document.getElementById('total-alugueis-stats').textContent = alugueis.length;
+                   document.getElementById('alugueis-andamento').textContent = emAndamento;
+                   document.getElementById('alugueis-hoje').textContent = alugueisHoje.length;
+                   document.getElementById('receita-hoje').textContent = Utils.formatCurrency(receitaHoje);
+               }
+               
+               static viewAluguel(id) {
+                   const aluguel = DataManager.getAlugueis().find(a => a.id === id);
+                   if (!aluguel) return;
+                   
+                   let detalhes = `
+                       <strong>Cliente:</strong> ${aluguel.cliente_nome || 'N/A'}<br>
+                       <strong>Carrinho:</strong> ${aluguel.carrinho_numero || 'N/A'}<br>
+                       <strong>Tempo:</strong> ${aluguel.tempo_nome || 'N/A'}<br>
+                       <strong>Valor:</strong> <span class="rental-value-display">${Utils.formatCurrency(aluguel.valor || 0)}</span><br>
+                       <strong>Início:</strong> ${Utils.formatDateTime(aluguel.data_inicio || aluguel.created_at)}<br>
+                   `;
+                   
+                   if (aluguel.data_fim) {
+                       detalhes += `<strong>Fim:</strong> ${Utils.formatDateTime(aluguel.data_fim)}<br>`;
+                   }
+                   
+                   detalhes += `<strong>Status:</strong> ${aluguel.status || 'Em Andamento'}`;
+                   
+                   Utils.showAlert(detalhes, 'info');
+               }
+               
+               static openModal(aluguel = null) {
+                   const modal = new bootstrap.Modal(document.getElementById('aluguelModal'));
+                   const form = document.getElementById('aluguelForm');
+                   const title = document.getElementById('aluguelModalTitle');
+                   
+                   form.reset();
+                   form.classList.remove('was-validated');
+                   
+                   // Preencher selects
+                   this.populateSelects();
+                   
+                   if (aluguel) {
+                       title.textContent = 'Editar Aluguel';
+                       document.getElementById('aluguel-id').value = aluguel.id;
+                       document.getElementById('aluguel-cliente').value = aluguel.cliente_id;
+                       document.getElementById('aluguel-carrinho').value = aluguel.carrinho_id;
+                       document.getElementById('aluguel-tempo').value = aluguel.tempo_id;
+                       document.getElementById('aluguel-valor').value = Utils.formatCurrency(aluguel.valor);
+                       document.getElementById('aluguel-data-inicio').value = aluguel.data_inicio ? new Date(aluguel.data_inicio).toISOString().slice(0, 16) : '';
+                       document.getElementById('aluguel-data-fim').value = aluguel.data_fim ? Utils.formatDateTime(aluguel.data_fim) : '';
+                       document.getElementById('aluguel-observacoes').value = aluguel.observacoes || '';
+                       document.getElementById('aluguel-status').value = aluguel.status || 'Em Andamento';
+                   } else {
+                       title.textContent = 'Novo Aluguel';
+                       document.getElementById('aluguel-status').value = 'Em Andamento';
+                       // Definir data/hora atual no fuso horário de Brasília
+                       this.setCurrentBrasiliaTime();
+                   }
+                   
+                   modal.show();
+               }
+               
+               static populateSelects() {
+                   // Preencher select de clientes
+                   const clienteSelect = document.getElementById('aluguel-cliente');
+                   const clientes = DataManager.getClientes().filter(c => c.ativo !== false);
+                   clienteSelect.innerHTML = '<option value="">Selecione um cliente</option>';
+                   clientes.forEach(cliente => {
+                       clienteSelect.innerHTML += `<option value="${cliente.id}">${cliente.nome}</option>`;
+                   });
+                   
+                   // Preencher select de carrinhos (apenas disponíveis)
+                   const carrinhoSelect = document.getElementById('aluguel-carrinho');
+                   const carrinhos = DataManager.getCarrinhos().filter(c => c.status === 'Disponível');
+                   carrinhoSelect.innerHTML = '<option value="">Selecione um carrinho</option>';
+                   carrinhos.forEach(carrinho => {
+                       carrinhoSelect.innerHTML += `<option value="${carrinho.id}">${carrinho.numero} - ${carrinho.modelo}</option>`;
+                   });
+                   
+                   // Preencher select de tempos (apenas ativos)
+                   const tempoSelect = document.getElementById('aluguel-tempo');
+                   const tempos = DataManager.getTemposAluguel().filter(t => t.ativo);
+                   tempoSelect.innerHTML = '<option value="">Selecione um tempo</option>';
+                   tempos.forEach(tempo => {
+                       tempoSelect.innerHTML += `<option value="${tempo.id}" data-valor="${tempo.valor}" data-duracao="${tempo.duracao}">${tempo.nome} - ${Utils.formatCurrency(tempo.valor)}</option>`;
+                   });
+                   
+                   // Event listener para calcular valor e data fim
+                   tempoSelect.addEventListener('change', this.calculateEndTime);
+                   document.getElementById('aluguel-data-inicio').addEventListener('change', this.calculateEndTime);
+               }
+               
+               static setCurrentBrasiliaTime() {
+                   // Obter horário atual de Brasília (UTC-3)
+                   const now = new Date();
+                   const brasiliaOffset = -3; // Brasília é UTC-3
+                   const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                   const brasilia = new Date(utc + (brasiliaOffset * 3600000));
+                   
+                   // Formatar para datetime-local (YYYY-MM-DDTHH:MM)
+                   const year = brasilia.getFullYear();
+                   const month = String(brasilia.getMonth() + 1).padStart(2, '0');
+                   const day = String(brasilia.getDate()).padStart(2, '0');
+                   const hours = String(brasilia.getHours()).padStart(2, '0');
+                   const minutes = String(brasilia.getMinutes()).padStart(2, '0');
+                   
+                   const brasiliaDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                   
+                   document.getElementById('aluguel-data-inicio').value = brasiliaDateTime;
+                   
+                   console.log(`Horário de Brasília definido: ${brasiliaDateTime}`);
+               }
+               
+               static calculateEndTime() {
+                   const tempoSelect = document.getElementById('aluguel-tempo');
+                   const dataInicioInput = document.getElementById('aluguel-data-inicio');
+                   const valorInput = document.getElementById('aluguel-valor');
+                   const dataFimInput = document.getElementById('aluguel-data-fim');
+                   
+                   const selectedOption = tempoSelect.options[tempoSelect.selectedIndex];
+                   const dataInicio = dataInicioInput.value;
+                   
+                   if (selectedOption && selectedOption.value && dataInicio) {
+                       const valor = parseFloat(selectedOption.dataset.valor);
+                       const duracao = parseInt(selectedOption.dataset.duracao);
+                       
+                       valorInput.value = Utils.formatCurrency(valor);
+                       
+                       // Calcular data fim
+                       const inicio = new Date(dataInicio);
+                       const fim = new Date(inicio.getTime() + (duracao * 60000)); // duracao em minutos
+                       dataFimInput.value = Utils.formatDateTime(fim.toISOString());
+                   } else {
+                       valorInput.value = '';
+                       dataFimInput.value = '';
+                   }
+               }
+               
+               static saveAluguel() {
+                   const form = document.getElementById('aluguelForm');
+                   
+                   if (!form.checkValidity()) {
+                       form.classList.add('was-validated');
+                       return;
+                   }
+                   
+                   const id = document.getElementById('aluguel-id').value;
+                   const clienteId = document.getElementById('aluguel-cliente').value;
+                   const carrinhoId = document.getElementById('aluguel-carrinho').value;
+                   const tempoId = document.getElementById('aluguel-tempo').value;
+                   
+                   if (!clienteId || !carrinhoId || !tempoId) {
+                       Utils.showAlert('Por favor, preencha todos os campos obrigatórios.', 'danger');
+                       return;
+                   }
+                   
+                   const aluguelData = {
+                       cliente_id: parseInt(clienteId),
+                       carrinho_id: parseInt(carrinhoId),
+                       tempo_id: parseInt(tempoId),
+                       data_inicio: document.getElementById('aluguel-data-inicio').value,
+                       observacoes: document.getElementById('aluguel-observacoes').value || null,
+                       status: document.getElementById('aluguel-status').value
+                   };
+                   
+                   try {
+                       if (id) {
+                           DataManager.updateAluguel(id, aluguelData);
+                           Utils.showAlert('Aluguel atualizado com sucesso!', 'success');
+                       } else {
+                           DataManager.addAluguel(aluguelData);
+                           Utils.showAlert('Aluguel criado com sucesso!', 'success');
+                       }
+                       
+                       this.loadAlugueis();
+                       DataManager.updateDashboard(); // Atualizar dashboard
+                       bootstrap.Modal.getInstance(document.getElementById('aluguelModal')).hide();
+                   } catch (error) {
+                       Utils.showAlert('Erro ao salvar aluguel: ' + error.message, 'danger');
+                   }
+               }
+               
+               static clearFilters() {
+                   document.getElementById('search-alugueis').value = '';
+                   document.getElementById('filter-status-aluguel').value = '';
+                   document.getElementById('filter-data').value = '';
+                   this.loadAlugueis();
+               }
+               
+               // Cadastro rápido de cliente
+               static openNovoClienteModal() {
+                   const modal = new bootstrap.Modal(document.getElementById('novoClienteRapidoModal'));
+                   const form = document.getElementById('novoClienteRapidoForm');
+                   
+                   form.reset();
+                   form.classList.remove('was-validated');
+                   
+                   // Aplicar máscaras
+                   setTimeout(() => {
+                       const cpfInput = document.getElementById('cliente-rapido-cpf');
+                       const telefoneInput = document.getElementById('cliente-rapido-telefone');
+                       
+                       if (cpfInput && !cpfInput.hasAttribute('data-masked')) {
+                           $(cpfInput).mask('000.000.000-00');
+                           cpfInput.setAttribute('data-masked', 'true');
+                       }
+                       
+                       if (telefoneInput && !telefoneInput.hasAttribute('data-masked')) {
+                           $(telefoneInput).mask('(00) 00000-0000');
+                           telefoneInput.setAttribute('data-masked', 'true');
+                       }
+                   }, 100);
+                   
+                   modal.show();
+               }
+               
+               static saveClienteRapido() {
+                   const form = document.getElementById('novoClienteRapidoForm');
+                   
+                   if (!form.checkValidity()) {
+                       form.classList.add('was-validated');
+                       return;
+                   }
+                   
+                   const clienteData = {
+                       nome: document.getElementById('cliente-rapido-nome').value,
+                       cpf: document.getElementById('cliente-rapido-cpf').value,
+                       telefone: document.getElementById('cliente-rapido-telefone').value,
+                       email: document.getElementById('cliente-rapido-email').value || null,
+                       ativo: true,
+                       endereco: null,
+                       cep: null,
+                       cidade: null,
+                       estado: null,
+                       observacoes: 'Cliente cadastrado via aluguel rápido'
+                   };
+                   
+                   // Validar CPF apenas se preenchido
+                   if (clienteData.cpf && !Validators.validateCPF(clienteData.cpf)) {
+                       Utils.showAlert('CPF inválido. Por favor, verifique.', 'danger');
+                       return;
+                   }
+                   
+                   // Verificar CPF duplicado apenas se preenchido
+                   if (clienteData.cpf) {
+                       const clientes = DataManager.getClientes();
+                       const cpfExiste = clientes.some(c => c.cpf === clienteData.cpf);
+                       if (cpfExiste) {
+                           Utils.showAlert('Já existe um cliente com este CPF.', 'danger');
+                           return;
+                       }
+                   }
+                   
+                   try {
+                       const novoCliente = DataManager.addCliente(clienteData);
+                       
+                       // Fechar modal
+                       bootstrap.Modal.getInstance(document.getElementById('novoClienteRapidoModal')).hide();
+                       
+                       // Atualizar select de clientes no modal de aluguel
+                       this.populateSelects();
+                       
+                       // Selecionar o novo cliente automaticamente
+                       document.getElementById('aluguel-cliente').value = novoCliente.id;
+                       
+                       Utils.showAlert(`Cliente ${novoCliente.nome} cadastrado e selecionado com sucesso!`, 'success');
+                       
+                   } catch (error) {
+                       Utils.showAlert('Erro ao cadastrar cliente: ' + error.message, 'danger');
+                   }
+               }
+           }
+           
+           // Gerenciamento de Relatórios (Básico)
+           class RelatoriosManager {
+               static loadRelatorios() {
+                   this.loadResumoGeral();
+                   this.loadTopTempos();
+               }
+               
+               static loadResumoGeral() {
+                   const stats = DataManager.getDashboardStats();
+                   const resumoContainer = document.getElementById('resumo-geral');
+                   
+                   if (!resumoContainer) return;
+                   
+                   resumoContainer.innerHTML = `
+                       <div class="row text-center">
+                           <div class="col-6 mb-3">
+                               <h4 class="text-primary">${stats.totalAlugueis}</h4>
+                               <small class="text-muted">Total Aluguéis</small>
+                           </div>
+                           <div class="col-6 mb-3">
+                               <h4 class="text-success">${stats.totalClientes}</h4>
+                               <small class="text-muted">Clientes</small>
+                           </div>
+                           <div class="col-6">
+                               <h4 class="text-info">${stats.totalCarrinhos}</h4>
+                               <small class="text-muted">Carrinhos</small>
+                           </div>
+                           <div class="col-6">
+                               <h4 class="text-warning">${Utils.formatCurrency(stats.receitaTotal)}</h4>
+                               <small class="text-muted">Receita Total</small>
+                           </div>
+                       </div>
+                   `;
+               }
+               
+               static loadTopTempos() {
+                   const relatorio = DataManager.getRelatorioTempos();
+                   const topContainer = document.getElementById('top-tempos');
+                   
+                   if (!topContainer) return;
+                   
+                   if (relatorio.length === 0) {
+                       topContainer.innerHTML = '<p class="text-muted">Nenhum tempo encontrado</p>';
+                       return;
+                   }
+                   
+                   const top3 = relatorio.slice(0, 3);
+                   
+                   topContainer.innerHTML = top3.map((tempo, index) => `
+                       <div class="d-flex justify-content-between align-items-center mb-2 ${index < top3.length - 1 ? 'border-bottom pb-2' : ''}">
+                           <div>
+                               <strong>${tempo.nome}</strong><br>
+                               <small class="text-muted">${Utils.formatDuration(tempo.duracao)} - ${Utils.formatCurrency(tempo.valor)}</small>
+                           </div>
+                           <div class="text-end">
+                               <span class="badge bg-primary">${tempo.totalAlugueis}</span><br>
+                               <small class="text-success">${Utils.formatCurrency(tempo.receita)}</small>
+                           </div>
+                       </div>
+                   `).join('');
+               }
+           }
+      </script>
+</body>
+</html>
