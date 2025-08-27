@@ -2747,10 +2747,14 @@
              }
              
              static deleteCliente(id) {
-                 const cliente = DataManager.getClientes().find(c => c.id === id);
-                 if (!cliente) return;
+                 const clienteId = parseInt(id);
+                 const cliente = DataManager.getClientes().find(c => c.id === clienteId);
+                 if (!cliente) {
+                     Utils.showAlert('Cliente não encontrado.', 'danger');
+                     return;
+                 }
                  
-                 const alugueis = DataManager.getAlugueis().filter(a => a.cliente_id === id);
+                 const alugueis = DataManager.getAlugueis().filter(a => a.cliente_id === clienteId);
                  
                  let message = `Tem certeza que deseja excluir o cliente "${cliente.nome}"?`;
                  if (alugueis.length > 0) {
@@ -2758,11 +2762,21 @@
                  }
                  
                  Utils.confirmAction(message, () => {
-                     if (DataManager.deleteCliente(id)) {
-                         Utils.showAlert('Cliente excluído com sucesso!', 'success');
-                         this.loadClientes();
-                     } else {
-                         Utils.showAlert('Erro ao excluir cliente.', 'danger');
+                     try {
+                         if (DataManager.deleteCliente(clienteId)) {
+                             Utils.showAlert('Cliente excluído com sucesso!', 'success');
+                             this.loadClientes();
+                             
+                             // Sincronizar com Supabase se disponível
+                             if (typeof supabaseSync !== 'undefined' && supabaseSync.currentUser) {
+                                 supabaseSync.syncClientes();
+                             }
+                         } else {
+                             Utils.showAlert('Erro ao excluir cliente.', 'danger');
+                         }
+                     } catch (error) {
+                         console.error('Erro ao excluir cliente:', error);
+                         Utils.showAlert('Erro ao excluir cliente: ' + error.message, 'danger');
                      }
                  });
              }
