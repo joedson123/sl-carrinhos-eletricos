@@ -132,10 +132,26 @@
         /* Fix dropdown z-index */
         .navbar .dropdown-menu {
             z-index: 9999 !important;
+            position: absolute !important;
         }
         
         .nav-item.dropdown {
             z-index: 9999 !important;
+            position: relative !important;
+        }
+        
+        /* Ensure dropdown appears above all content on desktop */
+        @media (min-width: 768px) {
+            .navbar .dropdown-menu {
+                z-index: 10000 !important;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            }
+            
+            .navbar .nav-item.dropdown:hover .dropdown-menu,
+            .navbar .nav-item.dropdown.show .dropdown-menu {
+                display: block !important;
+                z-index: 10000 !important;
+            }
         }
         
         .user-details {
@@ -3696,6 +3712,40 @@
                    } catch (error) {
                        Utils.showAlert('Erro ao cadastrar cliente: ' + error.message, 'danger');
                    }
+               }
+               
+               static deleteAluguel(id) {
+                   const aluguelId = parseInt(id);
+                   const aluguel = DataManager.getAlugueis().find(a => a.id === aluguelId);
+                   if (!aluguel) {
+                       Utils.showAlert('Aluguel não encontrado.', 'danger');
+                       return;
+                   }
+                   
+                   let message = `Tem certeza que deseja excluir o aluguel do cliente "${aluguel.cliente_nome}"?`;
+                   if (aluguel.status === 'Em Andamento') {
+                       message += '\n\nEste aluguel está em andamento e será finalizado automaticamente.';
+                   }
+                   
+                   Utils.confirmAction(message, () => {
+                       try {
+                           if (DataManager.deleteAluguel(aluguelId)) {
+                               Utils.showAlert('Aluguel excluído com sucesso!', 'success');
+                               this.loadAlugueis();
+                               DataManager.updateDashboard();
+                               
+                               // Sincronizar com Supabase se disponível
+                               if (typeof supabaseSync !== 'undefined' && supabaseSync.currentUser) {
+                                   supabaseSync.syncAlugueis();
+                               }
+                           } else {
+                               Utils.showAlert('Erro ao excluir aluguel.', 'danger');
+                           }
+                       } catch (error) {
+                           console.error('Erro ao excluir aluguel:', error);
+                           Utils.showAlert('Erro ao excluir aluguel: ' + error.message, 'danger');
+                       }
+                   });
                }
            }
            
