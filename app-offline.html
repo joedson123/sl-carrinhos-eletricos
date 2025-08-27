@@ -1498,8 +1498,11 @@
            </div>
        </div>
        
-       <!-- Data Manager -->
-    <script src="js/data-manager.js"></script>
+       <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Data Manager -->
+     <script src="js/data-manager.js"></script>
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -1522,8 +1525,217 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/pt-br.min.js"></script>
     
     <script>
-        // Sistema de Autenticação e Sincronização
-        class SyncManager {
+        // Configuração do Supabase
+         const SUPABASE_URL = 'https://tkubyjvkqsdmfxfcoihl.supabase.co';
+         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrdWJ5anZrcXNkbWZ4ZmNvaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyNTg2NjQsImV4cCI6MjA3MTgzNDY2NH0.UkuEeskb0SAJ4V6PSCnvCrFEe94ITpNDCqwUjK-xs6E';
+         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+         
+         // Classe de Sincronização Supabase
+         class SupabaseSync {
+             constructor() {
+                 this.isOnline = navigator.onLine;
+                 this.currentUser = null;
+                 this.setupEventListeners();
+                 this.checkAuth();
+             }
+             
+             setupEventListeners() {
+                 window.addEventListener('online', () => {
+                     this.isOnline = true;
+                     this.syncAllData();
+                 });
+                 
+                 window.addEventListener('offline', () => {
+                     this.isOnline = false;
+                 });
+             }
+             
+             async checkAuth() {
+                 const { data: { user } } = await supabase.auth.getUser();
+                 this.currentUser = user;
+                 
+                 if (user) {
+                     console.log('Usuário logado:', user.email);
+                     setTimeout(() => this.loadFromCloud(), 1000);
+                 }
+             }
+             
+             async syncAllData() {
+                 if (!this.isOnline || !this.currentUser) return;
+                 
+                 try {
+                     console.log('Iniciando sincronização...');
+                     
+                     await this.syncTemposAluguel();
+                     await this.syncClientes();
+                     await this.syncCarrinhos();
+                     await this.syncAlugueis();
+                     
+                     Utils.showAlert('Dados sincronizados com sucesso!', 'success');
+                     console.log('Sincronização concluída!');
+                 } catch (error) {
+                     console.error('Erro na sincronização:', error);
+                     Utils.showAlert('Erro na sincronização: ' + error.message, 'warning');
+                 }
+             }
+             
+             async syncTemposAluguel() {
+                 const localData = JSON.parse(localStorage.getItem('tempos_aluguel') || '[]');
+                 
+                 for (const item of localData) {
+                     const { error } = await supabase
+                         .from('tempos_aluguel')
+                         .upsert({
+                             id: item.id,
+                             user_id: this.currentUser.id,
+                             nome: item.nome,
+                             duracao: item.duracao,
+                             valor: item.valor,
+                             ativo: item.ativo,
+                             categoria: item.categoria,
+                             created_at: item.created_at,
+                             updated_at: new Date().toISOString()
+                         }, { onConflict: 'id' });
+                         
+                     if (error) console.error('Erro sync tempo:', error);
+                 }
+             }
+             
+             async syncClientes() {
+                 const localData = JSON.parse(localStorage.getItem('clientes') || '[]');
+                 
+                 for (const item of localData) {
+                     const { error } = await supabase
+                         .from('clientes')
+                         .upsert({
+                             id: item.id,
+                             user_id: this.currentUser.id,
+                             nome: item.nome,
+                             telefone: item.telefone,
+                             email: item.email,
+                             cpf: item.cpf,
+                             endereco: item.endereco,
+                             cep: item.cep,
+                             cidade: item.cidade,
+                             estado: item.estado,
+                             ativo: item.ativo,
+                             observacoes: item.observacoes,
+                             created_at: item.created_at,
+                             updated_at: new Date().toISOString()
+                         }, { onConflict: 'id' });
+                         
+                     if (error) console.error('Erro sync cliente:', error);
+                 }
+             }
+             
+             async syncCarrinhos() {
+                 const localData = JSON.parse(localStorage.getItem('carrinhos') || '[]');
+                 
+                 for (const item of localData) {
+                     const { error } = await supabase
+                         .from('carrinhos')
+                         .upsert({
+                             id: item.id,
+                             user_id: this.currentUser.id,
+                             numero: item.numero,
+                             modelo: item.modelo,
+                             status: item.status,
+                             bateria: item.bateria,
+                             cor: item.cor,
+                             observacoes: item.observacoes,
+                             created_at: item.created_at,
+                             updated_at: new Date().toISOString()
+                         }, { onConflict: 'id' });
+                         
+                     if (error) console.error('Erro sync carrinho:', error);
+                 }
+             }
+             
+             async syncAlugueis() {
+                 const localData = JSON.parse(localStorage.getItem('alugueis') || '[]');
+                 
+                 for (const item of localData) {
+                     const { error } = await supabase
+                         .from('alugueis')
+                         .upsert({
+                             id: item.id,
+                             user_id: this.currentUser.id,
+                             cliente_id: item.cliente_id,
+                             carrinho_id: item.carrinho_id,
+                             tempo_id: item.tempo_id,
+                             cliente_nome: item.cliente_nome,
+                             carrinho_numero: item.carrinho_numero,
+                             tempo_nome: item.tempo_nome,
+                             tempo_duracao: item.tempo_duracao,
+                             valor: item.valor,
+                             data_inicio: item.data_inicio,
+                             data_fim: item.data_fim,
+                             status: item.status,
+                             observacoes: item.observacoes,
+                             created_at: item.created_at,
+                             updated_at: new Date().toISOString()
+                         }, { onConflict: 'id' });
+                         
+                     if (error) console.error('Erro sync aluguel:', error);
+                 }
+             }
+             
+             async loadFromCloud() {
+                 if (!this.isOnline || !this.currentUser) return;
+                 
+                 try {
+                     console.log('Carregando dados da nuvem...');
+                     
+                     const { data: tempos } = await supabase.from('tempos_aluguel').select('*');
+                     const { data: clientes } = await supabase.from('clientes').select('*');
+                     const { data: carrinhos } = await supabase.from('carrinhos').select('*');
+                     const { data: alugueis } = await supabase.from('alugueis').select('*');
+                     
+                     if (tempos) this.mergeData('tempos_aluguel', tempos);
+                     if (clientes) this.mergeData('clientes', clientes);
+                     if (carrinhos) this.mergeData('carrinhos', carrinhos);
+                     if (alugueis) this.mergeData('alugueis', alugueis);
+                     
+                     if (typeof DataManager !== 'undefined' && DataManager.updateDashboard) {
+                         DataManager.updateDashboard();
+                     }
+                     
+                     console.log('Dados carregados da nuvem!');
+                 } catch (error) {
+                     console.error('Erro ao carregar da nuvem:', error);
+                 }
+             }
+             
+             mergeData(key, cloudData) {
+                 const localData = JSON.parse(localStorage.getItem(key) || '[]');
+                 const merged = [...localData];
+                 
+                 cloudData.forEach(cloudItem => {
+                     const existingIndex = merged.findIndex(item => item.id === cloudItem.id);
+                     
+                     if (existingIndex >= 0) {
+                         const localDate = new Date(merged[existingIndex].updated_at || merged[existingIndex].created_at);
+                         const cloudDate = new Date(cloudItem.updated_at || cloudItem.created_at);
+                         
+                         if (cloudDate > localDate) {
+                             merged[existingIndex] = cloudItem;
+                         }
+                     } else {
+                         merged.push(cloudItem);
+                     }
+                 });
+                 
+                 localStorage.setItem(key, JSON.stringify(merged));
+                 console.log(`${key} mesclado:`, merged.length, 'itens');
+             }
+             
+             async forcSync() {
+                 await this.syncAllData();
+             }
+         }
+         
+         // Sistema de Autenticação e Sincronização
+         class SyncManager {
             constructor() {
                 this.currentUser = null;
                 this.syncInterval = null;
@@ -1888,13 +2100,32 @@
                  }
                  
                  // Inicializar gerenciadores
-                 let syncManager;
-                 let dashboardVisibility;
-                 
-                 document.addEventListener('DOMContentLoaded', () => {
-                     syncManager = new SyncManager();
-                     dashboardVisibility = new DashboardVisibility();
-                 });
+                  let syncManager;
+                  let dashboardVisibility;
+                  let supabaseSync;
+                  
+                  document.addEventListener('DOMContentLoaded', () => {
+                      syncManager = new SyncManager();
+                      dashboardVisibility = new DashboardVisibility();
+                      supabaseSync = new SupabaseSync();
+                      
+                      // Sincronizar a cada 5 minutos
+                      setInterval(() => {
+                          if (supabaseSync && supabaseSync.currentUser) {
+                              supabaseSync.syncAllData();
+                          }
+                      }, 5 * 60 * 1000);
+                      
+                      // Adicionar botão de sincronização manual no menu do usuário
+                      setTimeout(() => {
+                          const userDropdown = document.querySelector('.dropdown-menu');
+                          if (userDropdown && supabaseSync) {
+                              const syncButton = document.createElement('li');
+                              syncButton.innerHTML = '<a class="dropdown-item" href="#" onclick="supabaseSync.forcSync()"><i class="fas fa-cloud-upload-alt me-2"></i>Sincronizar Dados</a>';
+                              userDropdown.insertBefore(syncButton, userDropdown.querySelector('hr'));
+                          }
+                      }, 2000);
+                  });
         
         // Classes DataManager, LocalStorage, Utils e Validators estão em data-manager.js
         
